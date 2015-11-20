@@ -1,0 +1,53 @@
+from django.db import models
+
+
+class FamiliaEquipo(models.Model):
+    id = models.AutoField(db_column='ID', primary_key=True)
+    nombre = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        verbose_name = "familia de equipo"
+        verbose_name_plural = "familias de equipo"
+        db_table = 'familia_equipo'
+
+
+class Funcion(models.Model):
+    id = models.AutoField(db_column='ID', primary_key=True)
+    funcion = models.CharField(db_column='FUNCION', unique=True, max_length=128)
+
+    class Meta:
+        verbose_name = "función"
+        verbose_name_plural = "funciones"
+        db_table = 'funcion'
+
+
+class Parametro(models.Model):
+    clave = models.CharField(db_column='CLAVE', primary_key=True, max_length=45)
+    clave_grupo = models.CharField(db_column='CLAVE_GRUPO', max_length=45, blank=True, null=True)
+    valor = models.CharField(db_column='VALOR', max_length=128, blank=True, null=True)
+
+    class Meta:
+        verbose_name = "parametro"
+        verbose_name_plural = "parametros"
+        db_table = 'parametro'
+
+
+class Situacion(models.Model):
+    id = models.AutoField(db_column='ID', primary_key=True)
+    situacion = models.CharField(db_column='SITUACION', max_length=128)
+
+    class Meta:
+        verbose_name = "situación"
+        verbose_name_plural = "situaciones"
+        db_table = 'situacion'
+
+
+class TipoCosto(models.Model):
+    id = models.AutoField(db_column="id", primary_key=True)
+    nombre = models.CharField(max_length=255, blank=True, null=True)
+    tipo = models.IntegerField()
+
+    class Meta:
+        verbose_name = "tipo de costo"
+        verbose_name_plural = "tipos de costo"
+        db_table = 'tipo_costo'

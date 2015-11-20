@@ -1,0 +1,7 @@
+1- Alarmas apuntando a RI inexistentes.
+select * from alarma where RI_ID not in (select RIID from ri)
+
+2- RIs apuntando a obras que ya no están
+select * from ri where OBRAID not in (select ID from obras)
+
+3- RI cambia el estado Fecha_creacion de txt a date
