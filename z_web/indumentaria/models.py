@@ -1,9 +1,12 @@
 from django.db import models
+
 from core.models import Operarios
 
 
 class Epp(models.Model):
-    "ok"
+    """
+    ok
+    """
     id = models.AutoField(db_column='ID', primary_key=True)
     nombre = models.CharField(db_column='NOMBRE', max_length=45)
     medida = models.CharField(db_column='MEDIDA', max_length=45)
@@ -24,7 +27,7 @@ class EppEntrega(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)
     fecha = models.DateField(db_column='FECHA')
     observaciones = models.TextField(db_column='OBSERVACIONES', blank=True, null=True)
-    operario = models.ForeignKey(Operarios, db_column='operarioId')
+    operarioid = models.ForeignKey(Operarios, db_column='operarioId', null=True)
 
     class Meta:
         db_table = 'epp_entrega'
@@ -32,7 +35,8 @@ class EppEntrega(models.Model):
         verbose_name_plural = "entregas de indumentaria"
 
     def __str__(self):
-        return "{} {}".format(self.fecha, self.operario.nombre)
+        return self.id
+        # return "{} {}".format(self.fecha, self.operario.nombre)
 
 
 class EppOperarios(models.Model):
@@ -52,6 +56,9 @@ class EppOperarios(models.Model):
 
 
 class EppEntregaItem(models.Model):
+    """
+    OK
+    """
     id = models.AutoField(db_column='ID', primary_key=True)
     epp_entrega = models.ForeignKey(EppEntrega, db_column='EPP_ENTREGA_ID')
     medida = models.CharField(db_column='MEDIDA', max_length=45)

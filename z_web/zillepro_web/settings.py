@@ -15,7 +15,7 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
+PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
@@ -31,18 +31,34 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
-    'suit',
+    'frontend',
+    # 'admin_tools',
+    # 'admin_tools.theming',
+    # 'admin_tools.menu',
+    # 'admin_tools.dashboard',
+    'jet.dashboard',
+    'jet',
+    #'grappelli',
+    #'material',
+    #'material.admin',
+    #'suit',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
+    'debug_toolbar',
+
     'core',
     'indumentaria',
     'documento',
     'parametros',
     'registro',
+    'costos',
+    'zweb_utils',
+
 )
 
 MIDDLEWARE_CLASSES = (
@@ -83,8 +99,8 @@ WSGI_APPLICATION = 'zillepro_web.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "zilleprojects",
-        'USER': "root",
+        'NAME': "zweb",
+        'USER': "zille",
         'PASSWORD': "infomati",
         "HOST": "127.0.0.1",
         "POST": 3306
@@ -95,9 +111,9 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
-LANGUAGE_CODE = 'es-ar'
+LANGUAGE_CODE = 'es'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Argentina/Mendoza'
 
 USE_I18N = True
 
@@ -105,18 +121,48 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOCALE_PATHS = (os.path.join(PROJECT_DIR, 'locale'), )
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
 
-SUIT_CONFIG = {
-    'ADMIN_NAME': "Zille - Administración",
-    'SHOW_REQUIRED_ASTERISK': True,
-    'CONFIRM_UNSAVED_CHANGES': True,
-    'MENU_ICONS': {
-        'sites': 'icon-leaf',
-        'auth': 'icon-lock',
+STATIC_ROOT = 'static'
+#
+# SUIT_CONFIG = {
+#     'ADMIN_NAME': "Zille - Administración",
+#     'SHOW_REQUIRED_ASTERISK': True,
+#     'CONFIRM_UNSAVED_CHANGES': True,
+#     'MENU_ICONS': {
+#         'sites': 'icon-leaf',
+#         'auth': 'icon-lock',
+#     }
+# }
+
+# GRAPPELLI_ADMIN_TITLE = "ZILLE WEB"
+
+JET_DEFAULT_THEME = 'default'
+
+JET_THEMES = [
+    {
+        'theme': 'default', # theme folder name
+        'color': '#47bac1', # color of the theme's button in user menu
+        'title': 'Default' # theme title
+    },
+    {
+        'theme': 'green',
+        'color': '#44b78b',
+        'title': 'Verde'
+    },
+    {
+        'theme': 'light-blue',
+        'color': '#5EADDE',
+        'title': 'Azul Claro'
+    },
+    {
+        'theme': 'light-gray',
+        'color': '#222',
+        'title': 'Gris Claro'
     }
-}
+]

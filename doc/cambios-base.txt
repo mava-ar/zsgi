@@ -1,7 +1,5 @@
-1- Alarmas apuntando a RI inexistentes.
-select * from alarma where RI_ID not in (select RIID from ri)
-
-2- RIs apuntando a obras que ya no están
-select * from ri where OBRAID not in (select ID from obras)
-
-3- RI cambia el estado Fecha_creacion de txt a date
+1. Añadi foreign key en Materiales a registroEquipos
+2. Cambie cantidad, viajes, distancia a float y int en Materiales.
+3. Cambiar partes diarios donde EQUIPO = 0 a EQUIPO = null
+4. Hice OneToOne el field HORARIO
+5. cambiar desarraigo y multifuncion a booleanField

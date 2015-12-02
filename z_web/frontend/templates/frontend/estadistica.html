@@ -1,0 +1,70 @@
+{% extends "admin/base_site.html" %}
+{% load i18n frontend_tags %}
+{% block title %}Panel de Control - ZILLE WEB{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+         	&rsaquo; Panel de control
+    </div>
+{% endblock %}
+{% block pretitle %}<h2>PANEL DE CONTROL</h2>{% endblock %}
+
+{% block content %}
+    <div class="filters">
+        <form method="get" action=".">
+            <label>Periodo: </label>
+            <select name="periodo">
+                {% for pe in periodos %}
+                    <option value="{{ pe.pk}}">{{ pe }}</option>
+                {% endfor %}
+            </select>
+            <button class="button" type="submit">Ver</button>
+        </form>
+    </div>
+
+    <table class="table">
+    {% for name,values in equipos.items %}
+        <thead>
+        <tr>
+            <th colspan="8">{{ name }}</th>
+        </tr>
+        <tr>
+
+            <th>N° Interno</th>
+            <th>Función</th>
+            <th>Operario</th>
+            <th>Días en el mes</th>
+            <th>Lubricantes y fluidos</th>
+            <th>Tren de rodaje</th>
+            <th>Costos de posesión</th>
+            <th>Reserva para reparaciones</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for line in values %}
+
+            <tr>
+                <td>{{ line.equipo__equipo__n_interno }}</td>
+                <td>{{ line.funcion__funcion }}</td>
+                <td>{{ line.operario__nombre }}</td>
+                <td>{{ line.dias_mes }}</td>
+                <td>{{ line.fluido }}</td>
+                <td>{{ line.tren }}</td>
+                <td>{{ line.posesion }}</td>
+                <td>{{ line.repara }}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="3"></td>
+            <td>TOTAL: </td>
+            <td colspan="4"><strong>${{ totales|get_item:name }}</strong></td>
+
+        </tr>
+        </tbody>
+    {% endfor %}
+    </table>
+
+
+{% endblock %}

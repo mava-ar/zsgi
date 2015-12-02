@@ -1,0 +1,13 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+{% block content %}
+    <p class="alert alert-info">Utilice este botón para calcular el costo mensual y hora basado en el costo anual.
+        <button class="btn btn-primary">
+            Recalcular costos
+    </button>
+    </p>
+
+    {{ block.super }}
+
+
+{% endblock %}  
