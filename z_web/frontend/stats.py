@@ -12,11 +12,12 @@ def get_calculo_costo(costos, valores, horas_dia, total=0):
     total += val
     return total, decimal_format(val)
 
+
 def get_utlizacion_equipo(periodo):
     qs = Partediario.objects.filter(
         fecha__lte=periodo.fecha_fin, fecha__gte=periodo.fecha_inicio, situacion__id=1).exclude(
         equipo__equipo_id=1).exclude(equipo_id__isnull=True).values(
-        'equipo__equipo__n_interno', 'funcion__funcion', 'operario__nombre',
+        'equipo__equipo_id', 'equipo__equipo__n_interno', 'funcion__funcion', 'operario__nombre',
         'obra__obra', 'obra_id', 'equipo__equipo__familia_equipo_id').annotate(dias_mes=Count('id')).order_by(
         'obra_id', '-equipo__equipo__n_interno')
 

@@ -58,7 +58,6 @@ INSTALLED_APPS = (
     'registro',
     'costos',
     'zweb_utils',
-
 )
 
 MIDDLEWARE_CLASSES = (
@@ -99,7 +98,7 @@ WSGI_APPLICATION = 'zillepro_web.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "zweb",
+        'NAME': "zilleweb",
         'USER': "zille",
         'PASSWORD': "infomati",
         "HOST": "127.0.0.1",
