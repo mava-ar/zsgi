@@ -23,6 +23,33 @@
         </form>
     </div>
 
+    <h2>Centro de costos</h2>
+
+    <table class="table">
+        {% for cc in resumen_costos %}
+            {% if forloop.first %}
+            <thead>
+            <tr>
+                {% for head in cc %}
+                <th>
+                    {{ head }}
+                </th>
+                {%  endfor %}
+            </tr>
+            </thead>
+            {% else %}
+                <tr>
+                {% for cell in cc %}
+                    <td>
+                    {{ cell }}
+                    </td>
+                {% endfor %}
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+
+    <h2>Utilización de equipos por CC</h2>
     <table class="table">
     {% for name,values in equipos.items %}
         <thead>
@@ -59,12 +86,13 @@
         <tr>
             <td colspan="3"></td>
             <td>TOTAL: </td>
-            <td colspan="4"><strong>${{ totales|get_item:name }}</strong></td>
+            <td colspan="4"><strong>${{ totales|get_item:values.0.obra_id }}</strong></td>
 
         </tr>
         </tbody>
     {% endfor %}
     </table>
+
 
 
 {% endblock %}

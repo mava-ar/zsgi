@@ -4,7 +4,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 
 from parametros.models import Periodo
-from .stats import get_utlizacion_equipo
+from .stats import get_utlizacion_equipo, get_cc_on_periodo
 
 
 @staff_member_required
@@ -13,11 +13,11 @@ def index(request):
     periodos = Periodo.objects.all().order_by('-fecha_inicio')
     context["periodos"] = periodos
     if 'periodo' in request.GET:
-        context["equipos"], context["totales"] = get_utlizacion_equipo(Periodo.objects.get(
-            pk=request.GET["periodo"]))
+        periodo = Periodo.objects.get(pk=request.GET["periodo"])
     else:
-        context["equipos"], context["totales"] = get_utlizacion_equipo(periodos[0])
-
+        periodo = periodos[0]
+    context["equipos"], context["totales"] = get_utlizacion_equipo(periodo)
+    context["resumen_costos"] = get_cc_on_periodo(periodo, context["totales"])
     return render_to_response("frontend/estadistica.html",
                               context,
                               context_instance=RequestContext(request))

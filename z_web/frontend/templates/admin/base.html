@@ -172,8 +172,8 @@
                                 {% endif %}
                                 {% if site_url %}
                                     <li class="sidebar-menu-item-list-item">
-                                        <a href="{{ site_url }}" class="sidebar-menu-item-list-item-link">
-                                            <span class="sidebar-menu-item-list-item-icon icon-open-external"></span> {% trans 'View site' %}
+                                        <a href="{% url 'frontend:index' %}" class="sidebar-menu-item-list-item-link">
+                                            <span class="sidebar-menu-item-list-item-icon icon-open-external"></span> Panel de control
                                         </a>
                                     </li>
                                 {% endif %}
@@ -197,7 +197,7 @@
                                     <input type="hidden" name="app_label">
                                 </form>
                                 <li class="sidebar-menu-item no-horizontal-padding">
-                                    <span class="sidebar-menu-item-title">{% trans 'Applications' %}</span>
+                                    <span class="sidebar-menu-item-title">Áreas</span>
                                     <ul class="sidebar-menu-item-list apps-list-pinned">
                                         {% for app in app_list.pinned_apps %}
                                             <li class="sidebar-menu-item-list-item app-item pinned app-{{ app.app_label }}" data-app-label="{{ app.app_label }}">
@@ -226,10 +226,10 @@
                                 </li>
                             {% endif %}
                             <li class="sidebar-menu-item no-horizontal-padding">
-                                <div class="dialog-confirm" id="bookmarks-add-dialog" title="{% trans "Add bookmark" %}">
+                                <div class="dialog-confirm" id="bookmarks-add-dialog" title="Añadir marcador">
                                     <form action="{% url "jet:add_bookmark" %}" method="POST" id="bookmarks-add-form">
                                         {% csrf_token %}
-                                        <p>{% trans "Title" %}:</p>
+                                        <p>Título:</p>
                                         <input type="text" name="title" class="fill_width">
                                         <p>{% trans "URL" %}:</p>
                                         <input type="text" name="url" class="fill_width">
@@ -239,26 +239,26 @@
                                     {% csrf_token %}
                                     <input type="hidden" name="id">
                                 </form>
-                                <div class="dialog-confirm" id="bookmarks-remove-dialog" title="{% trans "Delete bookmark" %}">
+                                <div class="dialog-confirm" id="bookmarks-remove-dialog" title="Remover marcador">
                                     <p>{% trans "Are you sure want to delete this bookmark?" %}</p>
                                 </div>
                                 <span class="sidebar-menu-item-title">
-                                    <a href="#" class="sidebar-menu-item-title-icon bookmarks-add" title="{% trans "Add bookmark" %}"{% if title %} data-title="{{ title }}"{% endif %}><span class="icon-add"></span></a>
-                                    {% trans 'bookmarks' %}
+                                    <a href="#" class="sidebar-menu-item-title-icon bookmarks-add" title="Añadir marcador"{% if title %} data-title="{{ title }}"{% endif %}><span class="icon-add"></span></a>
+                                    Marcadores
                                 </span>
                                 <ul class="sidebar-menu-item-list bookmarks-list">
                                     {% get_bookmarks user as bookmarks %}
                                     {% for bookmark in bookmarks %}
                                         <li class="sidebar-menu-item-list-item">
                                             <a href="{{ bookmark.url }}" class="sidebar-menu-item-list-item-link">
-                                                <span class="sidebar-menu-item-list-item-link-remove bookmarks-remove" data-bookmark-id="{{ bookmark.pk }}">{% trans "Remove" %}</span>
+                                                <span class="sidebar-menu-item-list-item-link-remove bookmarks-remove" data-bookmark-id="{{ bookmark.pk }}">Remover</span>
                                                 {{ bookmark.title }}
                                             </a>
                                         </li>
                                     {% endfor %}
                                     <li class="sidebar-menu-item-list-item empty">
                                         <a href="" class="sidebar-menu-item-list-item-link">
-                                            <span class="sidebar-menu-item-list-item-link-remove bookmarks-remove">{% trans "Remove" %}</span>
+                                            <span class="sidebar-menu-item-list-item-link-remove bookmarks-remove">Remover</span>
                                         </a>
                                     </li>
                                 </ul>
@@ -282,7 +282,7 @@
 
                                 <ul class="sidebar-popup-list">
                                     <li class="sidebar-popup-list-item app-{{ app.app_label }}{{ app.current|yesno:" current," }}">
-                                        <a href="{{ app.app_url }}" class="sidebar-popup-list-item-link">{% trans 'Application page' %}</a>
+                                        <a href="{{ app.app_url }}" class="sidebar-popup-list-item-link">Panel de área</a>
                                     </li>
 
                                     {% for model in app.models %}
