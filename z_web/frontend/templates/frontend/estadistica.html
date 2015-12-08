@@ -1,5 +1,6 @@
 {% extends "admin/base_site.html" %}
-{% load i18n frontend_tags %}
+
+{% load i18n frontend_tags charts_tags %}
 {% block title %}Panel de Control - ZILLE WEB{% endblock %}
 
 {% block breadcrumbs %}
@@ -16,7 +17,7 @@
             <label>Periodo: </label>
             <select name="periodo">
                 {% for pe in periodos %}
-                    <option value="{{ pe.pk}}">{{ pe }}</option>
+                    <option value="{{ pe.pk}}" {% if pe.pk == periodo.pk %} selected{% endif %}>{{ pe }}</option>
                 {% endfor %}
             </select>
             <button class="button" type="submit">Ver</button>
@@ -37,17 +38,43 @@
                 {%  endfor %}
             </tr>
             </thead>
+            {% elif forloop.last %}
+                <thead>
+                <tr>
+                    {% for head in cc %}
+                    <th>
+                        {% if forloop.first %}
+                            {{ head }}
+                        {% else %}
+                            {{ head|money }}
+                        {%  endif %}
+                    </th>
+                {%  endfor %}
+                </tr>
+                </thead>
             {% else %}
                 <tr>
                 {% for cell in cc %}
+
                     <td>
-                    {{ cell }}
+                    {% if forloop.first %}
+                        {{ cell }}
+                    {% else %}
+                        {{ cell|money }}
+                    {%  endif %}
                     </td>
                 {% endfor %}
                 </tr>
             {% endif %}
         {% endfor %}
     </table>
+
+    <div class="col-md-6" style="display: inline-block;">
+        {% resumen_costo_pie resumen_costos 500 500 %}
+    </div>
+    <div class="col-md-6" style="display: inline-block;">
+        {% resumen_costo_bar resumen_costos 700 500 %}
+    </div>
 
     <h2>Utilización de equipos por CC</h2>
     <table class="table">
@@ -77,16 +104,16 @@
                 <td>{{ line.funcion__funcion }}</td>
                 <td>{{ line.operario__nombre }}</td>
                 <td>{{ line.dias_mes }}</td>
-                <td>{{ line.fluido }}</td>
-                <td>{{ line.tren }}</td>
-                <td>{{ line.posesion }}</td>
-                <td>{{ line.repara }}</td>
+                <td>{{ line.fluido|money }}</td>
+                <td>{{ line.tren|money }}</td>
+                <td>{{ line.posesion|money }}</td>
+                <td>{{ line.repara|money }}</td>
             </tr>
         {% endfor %}
         <tr>
             <td colspan="3"></td>
             <td>TOTAL: </td>
-            <td colspan="4"><strong>${{ totales|get_item:values.0.obra_id }}</strong></td>
+            <td colspan="4"><strong>{{ totales|get_item:values.0.obra_id|money }}</strong></td>
 
         </tr>
         </tbody>

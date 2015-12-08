@@ -60,3 +60,5 @@ target/
 .idea/*
 
 static
+collected_static/
+components/

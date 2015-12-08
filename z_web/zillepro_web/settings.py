@@ -32,16 +32,10 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = (
     'frontend',
-    # 'admin_tools',
-    # 'admin_tools.theming',
-    # 'admin_tools.menu',
-    # 'admin_tools.dashboard',
+
     'jet.dashboard',
     'jet',
-    #'grappelli',
-    #'material',
-    #'material.admin',
-    #'suit',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -50,6 +44,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_extensions',
     'debug_toolbar',
+
+    'djangobower',
+    'django_nvd3',
 
     'core',
     'indumentaria',
@@ -69,6 +66,29 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+)
+
+# List of finder classes that know how to find static files in
+# various locations.
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'djangobower.finders.BowerFinder',
+    # 'pipeline.finders.PipelineFinder',
+    # 'compressor.finders.CompressorFinder',
+)
+
+MEDIA_ROOT = os.path.join(BASE_DIR, '../media/')
+STATIC_ROOT = os.path.join(BASE_DIR, '../collected_static/')
+BOWER_COMPONENTS_ROOT = os.path.join(BASE_DIR, '../components/')
+# PIPELINE_SASS_ARGUMENTS = "-p 8 -I '%s' -I '%s'" % (
+#         os.path.join(BOWER_COMPONENTS_ROOT, 'bower_components/bootstrap-sass/assets/stylesheets/'),
+#         os.path.join(BOWER_COMPONENTS_ROOT, 'bower_components/bootstrap-sass/assets/fonts/')
+# )
+
+BOWER_INSTALLED_APPS = (
+    'd3#3.3.13',
+    'nvd3#1.7.1',
 )
 
 ROOT_URLCONF = 'zillepro_web.urls'
@@ -127,27 +147,13 @@ LOCALE_PATHS = (os.path.join(PROJECT_DIR, 'locale'), )
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = 'static'
-#
-# SUIT_CONFIG = {
-#     'ADMIN_NAME': "Zille - Administración",
-#     'SHOW_REQUIRED_ASTERISK': True,
-#     'CONFIRM_UNSAVED_CHANGES': True,
-#     'MENU_ICONS': {
-#         'sites': 'icon-leaf',
-#         'auth': 'icon-lock',
-#     }
-# }
-
-# GRAPPELLI_ADMIN_TITLE = "ZILLE WEB"
-
 JET_DEFAULT_THEME = 'default'
 
 JET_THEMES = [
     {
-        'theme': 'default', # theme folder name
-        'color': '#47bac1', # color of the theme's button in user menu
-        'title': 'Default' # theme title
+        'theme': 'default',
+        'color': '#47bac1',
+        'title': 'Default'
     },
     {
         'theme': 'green',

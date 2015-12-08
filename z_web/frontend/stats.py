@@ -6,35 +6,33 @@ from costos.models import (LubricanteFluidosHidro, TrenRodaje, CostoPosesion, Re
                            CostoManoObra, CostoSubContrato, MaterialesTotal)
 from core.models import Obras
 from registro.models import Partediario
-from zweb_utils.format import decimal_format
 
 
 def get_calculo_costo(costos, valores, horas_dia, total=0):
     val = costos.get(valores["equipo__equipo__familia_equipo_id"], 0) * horas_dia * valores["dias_mes"]
     total += val
-    return total, decimal_format(val)
+    return total, val
 
 
-def calcular_item_costo(report, nombre_tipo, datos, no_prorrat, prorrat=[], multiplicador=1):
-    lista = [nombre_tipo, ]
+def calcular_item_costo(report, datos, no_prorrat, prorrat=[], multiplicador=1):
+    lista = []
 
     for x in no_prorrat:
         lista.append(datos.get(x, 0) * multiplicador if datos.get(x, 0) else 0)
     report.append(lista)
 
     if prorrat:
-        lista_prorrat = ["Prorrateo {}".format(nombre_tipo), ]
+        lista_prorrat = []
         total_prorrateo = 0
         for x in prorrat:
             data = datos.get(x, 0)
             if data:
                 total_prorrateo += (data * multiplicador)
-        total_prorrateo = total_prorrateo / len(no_prorrat)
+        total_prorrateo /= len(no_prorrat)
         for x in no_prorrat:
             lista_prorrat.append(total_prorrateo)
         report.append(lista_prorrat)
     return report
-
 
 
 def get_utlizacion_equipo(periodo):
@@ -43,7 +41,7 @@ def get_utlizacion_equipo(periodo):
         equipo__equipo_id=1).exclude(equipo_id__isnull=True).values(
         'equipo__equipo_id', 'equipo__equipo__n_interno', 'funcion__funcion', 'operario__nombre',
         'obra__obra', 'obra_id', 'equipo__equipo__familia_equipo_id').annotate(dias_mes=Count('id')).order_by(
-        'obra_id', '-equipo__equipo__n_interno')
+        '-obra_id', '-equipo__equipo__n_interno')
 
     processed = defaultdict(list)
     for result in qs:
@@ -68,15 +66,15 @@ def get_utlizacion_equipo(periodo):
             total, l["tren"] = get_calculo_costo(tren, l, param.dias_mes, total)  # tren.get(l["equipo__equipo__familia_equipo_id"], 0) * param.horas_dia * l["dias_mes"]
             total, l["posesion"] = get_calculo_costo(posesion, l, param.dias_mes, total)  # posesion.get(l["equipo__equipo__familia_equipo_id"], 0) * param.horas_dia * l["dias_mes"]
             total, l["repara"] = get_calculo_costo(repara, l, param.dias_mes, total)  # repara.get(l["equipo__equipo__familia_equipo_id"], 0) * param.horas_dia * l["dias_mes"]
-        totales[v[0]["obra_id"]] = decimal_format(total)
+        totales[v[0]["obra_id"]] = total
 
     return result, totales
 
 
 def get_cc_on_periodo(periodo, totales):
     # Todas las obras implicadas en costos
-    ccs = Obras.objects.filter(es_cc=True).values_list('id', 'codigo', 'prorratea_combustible', 'prorratea_manoobra',
-                                                  'prorratea_materiales')
+    ccs = Obras.objects.filter(es_cc=True).values_list('id', 'codigo', 'prorratea_combustible',
+                                                       'prorratea_manoobra', 'prorratea_materiales').order_by("pk")
     # Ids de obras tipo CC (con costos prorrateables y sin)
     obras_ids = [x[0] for x in ccs]
     pro_combustible = [x[0] for x in ccs if x[2]]
@@ -86,14 +84,18 @@ def get_cc_on_periodo(periodo, totales):
     # Busco las cabeceras (CC no prorrateable)
     no_prorrat = dict(ccs.filter(prorratea_combustible=False,
                                  prorratea_manoobra=False,
-                                 prorratea_materiales=False).values_list('id', 'codigo'))
+                                 prorratea_materiales=False).values_list('id', 'codigo').order_by('pk'))
 
     # Defino el head del reporte
-    report = []
+
     headers = [x for x in no_prorrat.values()]
     headers.insert(0, "TIPO DE COSTO")
-    report.append(headers)
+    tipo_costo_headers = ["Combustible", "Prorrateo de Combustible", "Mano de Obra", "Prorrateo de Mano de Obra", "Subcontratos" ,
+     "Utilización de equipos", "Materiales", "Prorateo de Materiales", "Totales"]
 
+    # report.append(headers)
+
+    values = []
     # combustible
     combustible = dict(ccs.annotate(combustible=Sum(
         Case(
@@ -107,18 +109,16 @@ def get_cc_on_periodo(periodo, totales):
 
 
     # Prorrateo de combustible
-    report = calcular_item_costo(
-        report,
-        "Combustible",
+    values = calcular_item_costo(
+        values,
         combustible,
         no_prorrat,
         pro_combustible, multiplicador=13.03)
 
     # Mano de obra
     mos = dict(CostoManoObra.objects.filter(periodo=periodo, obra_id__in=obras_ids).values_list('obra_id', 'monto'))
-    report = calcular_item_costo(
-        report,
-        "Mano de obra",
+    values = calcular_item_costo(
+        values,
         mos,
         no_prorrat,
         pro_manoobra
@@ -127,36 +127,40 @@ def get_cc_on_periodo(periodo, totales):
 
     # subcontratos
     sub = dict(CostoSubContrato.objects.filter(periodo=periodo, obra_id__in=obras_ids).values_list('obra_id', 'monto'))
-    report = calcular_item_costo(
-        report,
-        "Subcontratos",
+    values = calcular_item_costo(
+        values,
         sub,
         no_prorrat
     )
 
     # gastos de equipos
-    report = calcular_item_costo(
-        report,
-        "Utilización de equipos",
+    values = calcular_item_costo(
+        values,
         totales,
         no_prorrat
     )
 
     # Materiales
     mat = dict(MaterialesTotal.objects.filter(periodo=periodo, obra__id__in=obras_ids).values_list('obra_id', 'monto'))
-    report = calcular_item_costo(
-        report,
-        "Materiales",
+    values = calcular_item_costo(
+        values,
         mat,
         no_prorrat,
         pro_materiales
     )
-
     # armamos la tabla de costos
+    totales = [sum(i) for i in zip(*values)]
+    total = sum(totales)
+    values.append(totales)
+    report = []
+    report.append(headers)
+    i = 0
+    for x in tipo_costo_headers:
+        l = []
+        l.append(x)
+        l.extend(values[i])
+        report.append(l)
+        i += 1
 
-
-
-    # Subtotales
-
-    return report
+    return report, total
 
