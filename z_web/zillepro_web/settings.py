@@ -19,12 +19,6 @@ PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'b%g$gx6ovsx=dzc-7d!8i6m-d2*%g*^-^un7@l(x&)#z&c&d46'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
 ALLOWED_HOSTS = []
 
 
@@ -112,21 +106,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'zillepro_web.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': "zilleweb",
-        'USER': "zille",
-        'PASSWORD': "infomati",
-        "HOST": "127.0.0.1",
-        "POST": 3306
-    }
-}
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
@@ -171,3 +150,9 @@ JET_THEMES = [
         'title': 'Gris Claro'
     }
 ]
+
+try:  # import the local settings
+    from settings_local import *  # noqa
+except ImportError:
+    print('You need to define a settings_local.py')
+    exit()

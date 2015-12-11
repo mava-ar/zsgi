@@ -59,6 +59,7 @@ target/
 # pycharm
 .idea/*
 
-static
 collected_static/
 components/
+static/
+z_web/zillepro_web/settings_local.py
