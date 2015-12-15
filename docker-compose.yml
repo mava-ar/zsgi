@@ -1,7 +1,9 @@
 zweb_data:
+  restart: always
   image: busybox
   volumes:
-    - /var/lib/postgresql
+    - /var/lib/mysql
+  command: "true"
 
 db:
   image: mariadb

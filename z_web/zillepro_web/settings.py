@@ -152,7 +152,7 @@ JET_THEMES = [
 ]
 
 try:  # import the local settings
-    from settings_local import *  # noqa
+    from .settings_local import *  # noqa
 except ImportError:
     print('You need to define a settings_local.py')
     exit()

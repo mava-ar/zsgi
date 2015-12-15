@@ -60,3 +60,9 @@ def resumen_costo_bar(data_dict, width=500, height=400):
         'width': width,
         'height': height
     }
+
+
+@register.filter
+def extraer_data_grafico(data_dict):
+    l_data = list(zip(data_dict[0][1:], data_dict[-1:][0][1:]))
+    return l_data

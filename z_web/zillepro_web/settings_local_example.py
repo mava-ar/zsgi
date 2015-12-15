@@ -10,8 +10,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': "zweb",
-        'USER': "root",
-        'PASSWORD': "zille123",
+        'USER': "zweb",
+        'PASSWORD': "zweb",
         "HOST": "127.0.0.1",
         "POST": "3306"
     }
