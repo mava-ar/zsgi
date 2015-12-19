@@ -40,7 +40,9 @@ INSTALLED_APPS = (
     'debug_toolbar',
 
     'djangobower',
-    'django_nvd3',
+    'pipeline',
+    'bootstrap3',
+    'compressor',
 
     'core',
     'indumentaria',
@@ -68,21 +70,76 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'djangobower.finders.BowerFinder',
-    # 'pipeline.finders.PipelineFinder',
-    # 'compressor.finders.CompressorFinder',
+     'pipeline.finders.PipelineFinder',
+     'compressor.finders.CompressorFinder',
 )
+
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, '../media/')
 STATIC_ROOT = os.path.join(BASE_DIR, '../collected_static/')
 BOWER_COMPONENTS_ROOT = os.path.join(BASE_DIR, '../components/')
-# PIPELINE_SASS_ARGUMENTS = "-p 8 -I '%s' -I '%s'" % (
-#         os.path.join(BOWER_COMPONENTS_ROOT, 'bower_components/bootstrap-sass/assets/stylesheets/'),
-#         os.path.join(BOWER_COMPONENTS_ROOT, 'bower_components/bootstrap-sass/assets/fonts/')
-# )
+PIPELINE_SASS_ARGUMENTS = "-p 8 -I '%s' -I '%s'" % (
+         os.path.join(BOWER_COMPONENTS_ROOT, 'bower_components/bootstrap-sass/assets/stylesheets/'),
+         os.path.join(BOWER_COMPONENTS_ROOT, 'bower_components/bootstrap-sass/assets/fonts/')
+)
+
+PIPELINE_CSS = {
+    'base': {
+        'source_filenames': (
+            'frontend/css/zweb.scss',
+            'font-awesome/css/font-awesome.min.css',
+        ),
+        'output_filename': 'css/base.css',
+        'extra_context': {
+            'media': 'screen,projection',
+        },
+    },
+    'plugins': {
+        'source_filenames': (
+            'datatables/media/css/jquery.dataTables.css',
+            'datatables/media/css/dataTables.bootstrap.css',
+        ),
+        'output_filename': 'css/plugin.css',
+    }
+}
+
+PIPELINE_JS = {
+    'base_js': {
+        'source_filenames': (
+            'jquery/dist/jquery.js',
+            'bootstrap-sass/assets/javascripts/bootstrap.js',
+        ),
+        'output_filename': 'js/base_js.js',
+    },
+    'plugins_js': {
+        'source_filenames': (
+            'datatables/media/js/jquery.dataTables.js',
+            'datatables/media/js/dataTables.bootstrap.js',
+        ),
+        'output_filename': 'js/plugins.js',
+    }
+}
+
+PIPELINE_COMPILERS = (
+    'pipeline.compilers.sass.SASSCompiler',
+)
+PIPELINE_SASS_BINARY = 'sassc'
+PIPELINE_CSS_COMPRESSOR = None
+PIPELINE_JS_COMPRESSOR = None
+
+# django-compressor settings
+COMPRESS_PRECOMPILERS = (
+    ('text/x-scss', 'django_libsass.SassCompiler'),
+)
+
 
 BOWER_INSTALLED_APPS = (
     'd3#3.3.13',
     'nvd3#1.7.1',
+    'bootstrap-sass#3.3',
+    'fontawesome#4.3',
+    'datatables#~1.10.10',
 )
 
 ROOT_URLCONF = 'zillepro_web.urls'

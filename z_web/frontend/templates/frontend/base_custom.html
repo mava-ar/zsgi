@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load nvd3_tags i18n static %}
+{% load i18n static compress pipeline %}
 {% block title %}{% endblock %}
 {% block breadcrumbs %}
     <div class="breadcrumbs">
@@ -8,9 +8,20 @@
         {% block last_breadcrumbs %}{% endblock %}
     </div>
 {% endblock %}
+{% block bodyclass %}zweb{% endblock %}
 {% block extrastyle %}
-    <link href="{% static 'frontend/css/zweb.css' %}" type="text/css" />
+    {% compress css %}
+        {% stylesheet 'base' %}
+        {% stylesheet 'plugins' %}
+        <link media="all" href="{% static "nvd3/build/nv.d3.min.css" %}" type="text/css" rel="stylesheet" />
+    {% endcompress %}
 {% endblock %}
+{% block sidebar_menu %}{% endblock %}
 {% block jsinclude %}
-    {% include_chart_jscss %}
+    {% compress js %}
+        {% javascript 'base_js' %}
+        {% javascript 'plugins_js' %}
+        <script src="{% static "d3/d3.min.js" %}" type="text/javascript" charset="utf-8"></script>
+        <script src="{% static "nvd3/build/nv.d3.min.js" %}" type="text/javascript" charset="utf-8"></script>
+    {% endcompress %}
 {% endblock %}

@@ -1,4 +1,4 @@
-{% load i18n admin_static jet_tags %}
+{% load i18n admin_static jet_tags compress %}
 {% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}{% format_current_language LANGUAGE_CODE as LANGUAGE_CODE %}{% get_themes as THEMES %}{% get_current_theme as THEME %}{% get_current_jet_version as JET_VERSION %}
 {% block html %}<!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
@@ -7,16 +7,18 @@
     <meta name="copyright" content="geex-arts.com">
     {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 
-    <link href="{% static "jet/vendor/select2/css/select2.min.css" %}" rel="stylesheet" />
-    <link href="{% static "jet/vendor/jquery-ui/jquery-ui.min.css" %}" rel="stylesheet" />
-    <link href="{% static "jet/vendor/jquery-ui-timepicker/jquery.ui.timepicker.css" %}" rel="stylesheet" />
-    <link href="{% static "jet/vendor/perfect-scrollbar/css/perfect-scrollbar.css" %}" rel="stylesheet" />
-    <link href="{% static "jet/css/icons/style.css" %}?v={{ JET_VERSION }}" rel="stylesheet" />
-    <link href="{% static "jet/css/themes/"|add:THEME|add:"/base.css" %}?v={{ JET_VERSION }}" rel="stylesheet" class="base-stylesheet" />
-    <link href="{% static "jet/css/themes/"|add:THEME|add:"/select2.theme.css" %}?v={{ JET_VERSION }}" rel="stylesheet" class="select2-stylesheet" />
-    <link href="{% static "jet/css/themes/"|add:THEME|add:"/jquery-ui.theme.css" %}?v={{ JET_VERSION }}" rel="stylesheet" class="jquery-ui-stylesheet" />
-    <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% static "admin/css/ie.css" %}{% endblock %}" /><![endif]-->
-    {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
+    {% compress css %}
+        <link href="{% static "jet/vendor/select2/css/select2.min.css" %}" rel="stylesheet" />
+        <link href="{% static "jet/vendor/jquery-ui/jquery-ui.min.css" %}" rel="stylesheet" />
+        <link href="{% static "jet/vendor/jquery-ui-timepicker/jquery.ui.timepicker.css" %}" rel="stylesheet" />
+        <link href="{% static "jet/vendor/perfect-scrollbar/css/perfect-scrollbar.css" %}" rel="stylesheet" />
+        <link href="{% static "jet/css/icons/style.css" %}?v={{ JET_VERSION }}" rel="stylesheet" />
+        <link href="{% static "jet/css/themes/"|add:THEME|add:"/base.css" %}?v={{ JET_VERSION }}" rel="stylesheet" class="base-stylesheet" />
+        <link href="{% static "jet/css/themes/"|add:THEME|add:"/select2.theme.css" %}?v={{ JET_VERSION }}" rel="stylesheet" class="select2-stylesheet" />
+        <link href="{% static "jet/css/themes/"|add:THEME|add:"/jquery-ui.theme.css" %}?v={{ JET_VERSION }}" rel="stylesheet" class="jquery-ui-stylesheet" />
+        <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% static "admin/css/ie.css" %}{% endblock %}" /><![endif]-->
+        {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
+    {% endcompress %}
     {% block extrastyle %}{% endblock %}
     {% block extrahead %}{% endblock %}
 </head>
@@ -122,6 +124,7 @@
             </div>
 
         {% if not is_popup %}
+            {% block sidebar_menu %}
             <div class="sidebar">
                 <div class="sidebar-menu-wrapper">
                     <div id="branding">
@@ -267,9 +270,12 @@
                     </div>
                 </div>
             {% endif %}
+            {% endblock %}
             </div>
         {% endif %}
     {% endblock %}
+    <script type="text/javascript" src="{% url 'jet:jsi18n' %}"></script>
+    {% compress js %}
     <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
     <script type="text/javascript">window.__admin_utc_offset__ = "{% filter escapejs %}{% now "Z" %}{% endfilter %}";</script>
     <script type="text/javascript" charset="utf-8">
@@ -277,7 +283,7 @@
         var TIME_FORMAT = "{% get_time_format %}";
         var DATETIME_FORMAT = "{% get_datetime_format %}";
     </script>
-    <script type="text/javascript" src="{% url 'jet:jsi18n' %}"></script>
+
     <script src="{% static "jet/vendor/jquery/jquery-1.11.3.min.js" %}"></script>
     <script src="{% static "jet/vendor/jquery-ui/jquery-ui.min.js" %}"></script>
     <script src="{% static "jet/vendor/jquery-ui-timepicker/jquery.ui.timepicker.js" %}"></script>
@@ -314,7 +320,7 @@
     </script>
     <script src="{% static "jet/js/main.min.js" %}?v={{ JET_VERSION }}"></script>
     <script src="{% static "jet/js/select2.jet.min.js" %}?v={{ JET_VERSION }}"></script>
-
+    {% endcompress %}
     {% block jsinclude %}{% endblock %}
     {% block js %}{% endblock %}
 </body>

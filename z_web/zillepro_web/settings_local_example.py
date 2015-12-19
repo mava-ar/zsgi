@@ -17,3 +17,4 @@ DATABASES = {
     }
 }
 
+COMPRESS_ENABLED = True
