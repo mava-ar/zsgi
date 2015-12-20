@@ -1,10 +1,12 @@
 from django.contrib.admin.views.decorators import staff_member_required
-
+from django.contrib import messages
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.utils.safestring import mark_safe
 
 from parametros.models import Periodo
-from .stats import get_utlizacion_equipo
+from costos.models import CostoParametro
+from .stats import get_utlizacion_equipo, get_cc_on_periodo, get_ventas_costos
 
 
 @staff_member_required
@@ -12,59 +14,28 @@ def index(request):
     context = {}
     periodos = Periodo.objects.all().order_by('-fecha_inicio')
     context["periodos"] = periodos
-    if 'periodo' in request.GET:
-        context["equipos"], context["totales"] = get_utlizacion_equipo(Periodo.objects.get(
-            pk=request.GET["periodo"]))
+    if periodos:
+        if 'periodo' in request.GET:
+            periodo = Periodo.objects.get(pk=request.GET["periodo"])
+        else:
+            periodo = periodos[0] if periodos else None
+        context["periodo"] = periodo
+        try:
+            context["equipos"], context["totales"] = get_utlizacion_equipo(periodo)
+            context["resumen_costos"], context["total"], totales_costos = get_cc_on_periodo(periodo, context["totales"])
+        except CostoParametro.DoesNotExist as e:
+            messages.add_message(request, messages.WARNING,
+                                 mark_safe("No están definidos los <a href='/costos/costoparametro'>parámetros de costos</a> para el "
+                                           "periodo {}".format(periodo)))
+        try:
+            context["cert-costos"] = get_ventas_costos(periodo, totales_costos)
+        except Exception:
+            pass
     else:
-        context["equipos"], context["totales"] = get_utlizacion_equipo(periodos[0])
-
-    return render_to_response("frontend/estadistica.html",
+        messages.add_message(request, messages.WARNING, "No hay periodos definidos en el sistema.")
+    return render_to_response("frontend/panel_control.html",
                               context,
                               context_instance=RequestContext(request))
 
-#
-# class EstadisticaView(TemplateView):
-#     template_name = "frontend/estadistica.html"
-#
-#     def dispatch(self, request, *args, **kwargs):
-#         return super(EstadisticaView, self).dispatch(request, *args, **kwargs)
-#
-#     def get_context_data(self, **kwargs):
-#         context = super(EstadisticaView, self).get_context_data(**kwargs)
-#         periodos = Periodo.objects.all().order_by('-fecha_inicio')
-#         context["periodos"] = periodos
-#         if 'periodo' in self.request.GET:
-#             context["equipos"] = self.get_utlizacion_equipo(Periodo.objects.get(pk=self.request.GET["periodo"]))
-#         else:
-#             context["equipos"] = self.get_utlizacion_equipo(periodos[0])
-#
-#         return context
 
 
-
-
-
-
-
-
-
-
-
-    """ Agrupar por obra!      processed = defaultdict(lambda: defaultdict(lambda: defaultdict(dict)))"""
-
-"""
-    String query= "SELECT EQ.N_INTERNO as nint, f.nombre as familia, O.NOMBRE as nombre, "
-+                + "COUNT(PD.id) as DiasEnMes, OB.OBRA as obra, OB.id as obraid "
-+                + "FROM partediario PD "
-+                + "INNER JOIN operarios O ON PD.operario = O.id "
-+                + "INNER JOIN obras OB ON PD.obra = OB.id "
-+                + "INNER JOIN registro_equipo RQ ON PD.equipo = RQ.id "
-+                + "INNER JOIN equipos EQ ON RQ.equipo = EQ.id "
-+                + "INNER JOIN familia_equipo f ON f.id = EQ.familia_equipo_id "
-+                + "where PD.fecha <= '"+ FechaUtil.getFechaSQL(hasta)+"' and "
-+                + "PD.fecha >= '"+ FechaUtil.getFechaSQL(desde)+"' and EQ.id != 1 "
-+                + "AND PD.situacion =1 "
-+                + "group by OB.id, EQ.N_INTERNO "
-+                + "order by OB.id, EQ.N_INTERNO desc";
-
-"""

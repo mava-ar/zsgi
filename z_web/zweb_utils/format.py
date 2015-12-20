@@ -19,3 +19,13 @@ def currency_format(val):
     """
     return "$ {}".format(decimal_format(val))
 
+
+def number_js_format(val):
+    """
+
+    :param val:
+    :return:
+    """
+    num = "{:.2f}".format(val)
+
+    return num

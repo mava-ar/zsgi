@@ -1,4 +1,4 @@
-{% load i18n admin_static jet_tags %}
+{% load i18n admin_static jet_tags compress %}
 {% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}{% format_current_language LANGUAGE_CODE as LANGUAGE_CODE %}{% get_themes as THEMES %}{% get_current_theme as THEME %}{% get_current_jet_version as JET_VERSION %}
 {% block html %}<!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
@@ -7,50 +7,19 @@
     <meta name="copyright" content="geex-arts.com">
     {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 
-    <link href="{% static "jet/vendor/select2/css/select2.min.css" %}" rel="stylesheet" />
-    <link href="{% static "jet/vendor/jquery-ui/jquery-ui.min.css" %}" rel="stylesheet" />
-    <link href="{% static "jet/vendor/jquery-ui-timepicker/jquery.ui.timepicker.css" %}" rel="stylesheet" />
-    <link href="{% static "jet/vendor/perfect-scrollbar/css/perfect-scrollbar.css" %}" rel="stylesheet" />
-    <link href="{% static "jet/css/icons/style.css" %}?v={{ JET_VERSION }}" rel="stylesheet" />
-    <link href="{% static "jet/css/themes/"|add:THEME|add:"/base.css" %}?v={{ JET_VERSION }}" rel="stylesheet" class="base-stylesheet" />
-    <link href="{% static "jet/css/themes/"|add:THEME|add:"/select2.theme.css" %}?v={{ JET_VERSION }}" rel="stylesheet" class="select2-stylesheet" />
-    <link href="{% static "jet/css/themes/"|add:THEME|add:"/jquery-ui.theme.css" %}?v={{ JET_VERSION }}" rel="stylesheet" class="jquery-ui-stylesheet" />
-    <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% static "admin/css/ie.css" %}{% endblock %}" /><![endif]-->
-    {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
+    {% compress css %}
+        <link href="{% static "jet/vendor/select2/css/select2.min.css" %}" rel="stylesheet" />
+        <link href="{% static "jet/vendor/jquery-ui/jquery-ui.min.css" %}" rel="stylesheet" />
+        <link href="{% static "jet/vendor/jquery-ui-timepicker/jquery.ui.timepicker.css" %}" rel="stylesheet" />
+        <link href="{% static "jet/vendor/perfect-scrollbar/css/perfect-scrollbar.css" %}" rel="stylesheet" />
+        <link href="{% static "jet/css/icons/style.css" %}?v={{ JET_VERSION }}" rel="stylesheet" />
+        <link href="{% static "jet/css/themes/"|add:THEME|add:"/base.css" %}?v={{ JET_VERSION }}" rel="stylesheet" class="base-stylesheet" />
+        <link href="{% static "jet/css/themes/"|add:THEME|add:"/select2.theme.css" %}?v={{ JET_VERSION }}" rel="stylesheet" class="select2-stylesheet" />
+        <link href="{% static "jet/css/themes/"|add:THEME|add:"/jquery-ui.theme.css" %}?v={{ JET_VERSION }}" rel="stylesheet" class="jquery-ui-stylesheet" />
+        <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% static "admin/css/ie.css" %}{% endblock %}" /><![endif]-->
+        {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
+    {% endcompress %}
     {% block extrastyle %}{% endblock %}
-
-    <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
-    <script type="text/javascript">window.__admin_utc_offset__ = "{% filter escapejs %}{% now "Z" %}{% endfilter %}";</script>
-    <script type="text/javascript" charset="utf-8">
-        var DATE_FORMAT = "{% get_date_format %}";
-        var TIME_FORMAT = "{% get_time_format %}";
-        var DATETIME_FORMAT = "{% get_datetime_format %}";
-    </script>
-    <script type="text/javascript" src="{% url 'jet:jsi18n' %}"></script>
-    <script src="{% static "jet/vendor/jquery/jquery-1.11.3.min.js" %}"></script>
-    <script src="{% static "jet/vendor/jquery-ui/jquery-ui.min.js" %}"></script>
-    <script src="{% static "jet/vendor/jquery-ui-timepicker/jquery.ui.timepicker.js" %}"></script>
-    <script src="{% static "jet/vendor/select2/js/select2.full.min.js" %}"></script>
-    <script src="{% static "jet/vendor/perfect-scrollbar/js/perfect-scrollbar.min.js" %}"></script>
-    <script src="{% static "jet/vendor/perfect-scrollbar/js/perfect-scrollbar.jquery.min.js" %}"></script>
-    <script src="{% static "jet/vendor/jquery-cookie/jquery.cookie-1.4.1.min.js" %}"></script>
-    {% if LANGUAGE_CODE|slice:":2" != 'en' %}
-        {% with "jet/vendor/jquery-ui/i18n/datepicker-"|add:LANGUAGE_CODE|add:".js" as url %}
-            <script src="{% static url %}"></script>
-        {% endwith %}
-        {% with "jet/vendor/jquery-ui-timepicker/i18n/jquery.ui.timepicker-"|add:LANGUAGE_CODE|add:".js" as url %}
-            <script src="{% static url %}"></script>
-        {% endwith %}
-        {% with "jet/vendor/select2/js/i18n/"|add:LANGUAGE_CODE|add:".js" as url %}
-            <script src="{% static url %}"></script>
-        {% endwith %}
-    {% endif %}
-    <script type="text/javascript" charset="utf-8">
-        var jet = jet || {};
-        jet.jQuery = jQuery.noConflict(true);
-    </script>
-    <script src="{% static "jet/js/main.min.js" %}?v={{ JET_VERSION }}"></script>
-    <script src="{% static "jet/js/select2.jet.min.js" %}?v={{ JET_VERSION }}"></script>
     {% block extrahead %}{% endblock %}
 </head>
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
@@ -155,6 +124,7 @@
             </div>
 
         {% if not is_popup %}
+            {% block sidebar_menu %}
             <div class="sidebar">
                 <div class="sidebar-menu-wrapper">
                     <div id="branding">
@@ -172,8 +142,8 @@
                                 {% endif %}
                                 {% if site_url %}
                                     <li class="sidebar-menu-item-list-item">
-                                        <a href="{{ site_url }}" class="sidebar-menu-item-list-item-link">
-                                            <span class="sidebar-menu-item-list-item-icon icon-open-external"></span> {% trans 'View site' %}
+                                        <a href="{% url 'frontend:index' %}" class="sidebar-menu-item-list-item-link">
+                                            <span class="sidebar-menu-item-list-item-icon icon-open-external"></span> Panel de control
                                         </a>
                                     </li>
                                 {% endif %}
@@ -197,7 +167,7 @@
                                     <input type="hidden" name="app_label">
                                 </form>
                                 <li class="sidebar-menu-item no-horizontal-padding">
-                                    <span class="sidebar-menu-item-title">{% trans 'Applications' %}</span>
+                                    <span class="sidebar-menu-item-title">Áreas</span>
                                     <ul class="sidebar-menu-item-list apps-list-pinned">
                                         {% for app in app_list.pinned_apps %}
                                             <li class="sidebar-menu-item-list-item app-item pinned app-{{ app.app_label }}" data-app-label="{{ app.app_label }}">
@@ -226,10 +196,10 @@
                                 </li>
                             {% endif %}
                             <li class="sidebar-menu-item no-horizontal-padding">
-                                <div class="dialog-confirm" id="bookmarks-add-dialog" title="{% trans "Add bookmark" %}">
+                                <div class="dialog-confirm" id="bookmarks-add-dialog" title="Añadir marcador">
                                     <form action="{% url "jet:add_bookmark" %}" method="POST" id="bookmarks-add-form">
                                         {% csrf_token %}
-                                        <p>{% trans "Title" %}:</p>
+                                        <p>Título:</p>
                                         <input type="text" name="title" class="fill_width">
                                         <p>{% trans "URL" %}:</p>
                                         <input type="text" name="url" class="fill_width">
@@ -239,26 +209,26 @@
                                     {% csrf_token %}
                                     <input type="hidden" name="id">
                                 </form>
-                                <div class="dialog-confirm" id="bookmarks-remove-dialog" title="{% trans "Delete bookmark" %}">
+                                <div class="dialog-confirm" id="bookmarks-remove-dialog" title="Remover marcador">
                                     <p>{% trans "Are you sure want to delete this bookmark?" %}</p>
                                 </div>
                                 <span class="sidebar-menu-item-title">
-                                    <a href="#" class="sidebar-menu-item-title-icon bookmarks-add" title="{% trans "Add bookmark" %}"{% if title %} data-title="{{ title }}"{% endif %}><span class="icon-add"></span></a>
-                                    {% trans 'bookmarks' %}
+                                    <a href="#" class="sidebar-menu-item-title-icon bookmarks-add" title="Añadir marcador"{% if title %} data-title="{{ title }}"{% endif %}><span class="icon-add"></span></a>
+                                    Marcadores
                                 </span>
                                 <ul class="sidebar-menu-item-list bookmarks-list">
                                     {% get_bookmarks user as bookmarks %}
                                     {% for bookmark in bookmarks %}
                                         <li class="sidebar-menu-item-list-item">
                                             <a href="{{ bookmark.url }}" class="sidebar-menu-item-list-item-link">
-                                                <span class="sidebar-menu-item-list-item-link-remove bookmarks-remove" data-bookmark-id="{{ bookmark.pk }}">{% trans "Remove" %}</span>
+                                                <span class="sidebar-menu-item-list-item-link-remove bookmarks-remove" data-bookmark-id="{{ bookmark.pk }}">Remover</span>
                                                 {{ bookmark.title }}
                                             </a>
                                         </li>
                                     {% endfor %}
                                     <li class="sidebar-menu-item-list-item empty">
                                         <a href="" class="sidebar-menu-item-list-item-link">
-                                            <span class="sidebar-menu-item-list-item-link-remove bookmarks-remove">{% trans "Remove" %}</span>
+                                            <span class="sidebar-menu-item-list-item-link-remove bookmarks-remove">Remover</span>
                                         </a>
                                     </li>
                                 </ul>
@@ -282,7 +252,7 @@
 
                                 <ul class="sidebar-popup-list">
                                     <li class="sidebar-popup-list-item app-{{ app.app_label }}{{ app.current|yesno:" current," }}">
-                                        <a href="{{ app.app_url }}" class="sidebar-popup-list-item-link">{% trans 'Application page' %}</a>
+                                        <a href="{{ app.app_url }}" class="sidebar-popup-list-item-link">Panel de área</a>
                                     </li>
 
                                     {% for model in app.models %}
@@ -300,8 +270,58 @@
                     </div>
                 </div>
             {% endif %}
+            {% endblock %}
             </div>
         {% endif %}
     {% endblock %}
+    <script type="text/javascript" src="{% url 'jet:jsi18n' %}"></script>
+    {% compress js %}
+    <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
+    <script type="text/javascript">window.__admin_utc_offset__ = "{% filter escapejs %}{% now "Z" %}{% endfilter %}";</script>
+    <script type="text/javascript" charset="utf-8">
+        var DATE_FORMAT = "{% get_date_format %}";
+        var TIME_FORMAT = "{% get_time_format %}";
+        var DATETIME_FORMAT = "{% get_datetime_format %}";
+    </script>
+
+    <script src="{% static "jet/vendor/jquery/jquery-1.11.3.min.js" %}"></script>
+    <script src="{% static "jet/vendor/jquery-ui/jquery-ui.min.js" %}"></script>
+    <script src="{% static "jet/vendor/jquery-ui-timepicker/jquery.ui.timepicker.js" %}"></script>
+    <script src="{% static "jet/vendor/select2/js/select2.full.min.js" %}"></script>
+    <script src="{% static "jet/vendor/perfect-scrollbar/js/perfect-scrollbar.min.js" %}"></script>
+    <script src="{% static "jet/vendor/perfect-scrollbar/js/perfect-scrollbar.jquery.min.js" %}"></script>
+    <script src="{% static "jet/vendor/jquery-cookie/jquery.cookie-1.4.1.min.js" %}"></script>
+    {# hardcoding #}
+    {% if LANGUAGE_CODE == 'es-AR' %}
+        {% with "jet/vendor/jquery-ui/i18n/datepicker-es.js" as url %}
+            <script src="{% static url %}"></script>
+        {% endwith %}
+        {% with "jet/vendor/jquery-ui-timepicker/i18n/jquery.ui.timepicker-es.js" as url %}
+            <script src="{% static url %}"></script>
+        {% endwith %}
+        {% with "jet/vendor/select2/js/i18n/es.js" as url %}
+            <script src="{% static url %}"></script>
+        {% endwith %}
+
+    {% elif LANGUAGE_CODE|slice:":2" != 'en' %}
+        {% with "jet/vendor/jquery-ui/i18n/datepicker-"|add:LANGUAGE_CODE|add:".js" as url %}
+            <script src="{% static url %}"></script>
+        {% endwith %}
+        {% with "jet/vendor/jquery-ui-timepicker/i18n/jquery.ui.timepicker-"|add:LANGUAGE_CODE|add:".js" as url %}
+            <script src="{% static url %}"></script>
+        {% endwith %}
+        {% with "jet/vendor/select2/js/i18n/"|add:LANGUAGE_CODE|add:".js" as url %}
+            <script src="{% static url %}"></script>
+        {% endwith %}
+    {% endif %}
+    <script type="text/javascript" charset="utf-8">
+        var jet = jet || {};
+        jet.jQuery = jQuery.noConflict(true);
+    </script>
+    <script src="{% static "jet/js/main.min.js" %}?v={{ JET_VERSION }}"></script>
+    <script src="{% static "jet/js/select2.jet.min.js" %}?v={{ JET_VERSION }}"></script>
+    {% endcompress %}
+    {% block jsinclude %}{% endblock %}
+    {% block js %}{% endblock %}
 </body>
 </html>{% endblock %}

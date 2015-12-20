@@ -81,7 +81,7 @@ class Obras(models.Model):
     OK
     """
     id = models.AutoField(db_column='ID', primary_key=True)
-    codigo = models.CharField(db_column='CODIGO', max_length=255, blank=True, null=True)
+    codigo = models.CharField(db_column='CODIGO', max_length=255, unique=True)
     obra = models.CharField(db_column='OBRA', max_length=255, blank=True, null=True)
     contrato = models.CharField(db_column='CONTRATO', max_length=64, blank=True, null=True)
     comitente = models.CharField(db_column='COMITENTE', max_length=255, blank=True, null=True)
@@ -96,8 +96,20 @@ class Obras(models.Model):
     limite_vianda_doble = models.FloatField(db_column='LIMITE_VIANDA_DOBLE', default=2)
     tiene_registro = models.BooleanField(db_column='TIENE_REGISTRO', default=True)
     tiene_equipo = models.BooleanField(db_column='TIENE_EQUIPO', default=True)
-    descuenta_francos = models.BooleanField(db_column='DESCUENTA_FRANCOS', default=False)
-    descuenta_licencias = models.BooleanField(db_column='DESCUENTA_LICENCIAS', default=False)
+    descuenta_francos = models.BooleanField(verbose_name="Se utiliza para francos", db_column='DESCUENTA_FRANCOS', default=False)
+    descuenta_licencias = models.BooleanField(verbose_name="Se utiliza para licencias anuales", db_column='DESCUENTA_LICENCIAS', default=False)
+    es_cc = models.BooleanField(verbose_name="Tratar como CC", default=False,
+                                help_text="Si está seleccionada, la obra es considerada un CC y se utiliza "
+                                          "para los cálculos de costos")
+    prorratea_combustible = models.BooleanField(verbose_name="¿Prorratea Combustible?", default=False,
+                                                help_text="Si está seleccionada, los costos de combustibles se "
+                                                          "prorratean en los demás CC")
+    prorratea_manoobra = models.BooleanField(verbose_name="¿Prorratea Mano de Obra?", default=False,
+                                             help_text="Si está seleccionada, los costos de mano de obra se "
+                                                          "prorratean en los demás CC")
+    prorratea_materiales = models.BooleanField(verbose_name="¿Prorratea Materiales?", default=False,
+                                               help_text="Si está seleccionada, los costos de materiales se "
+                                                          "prorratean en los demás CC")
 
     class Meta:
         verbose_name = "obra"
