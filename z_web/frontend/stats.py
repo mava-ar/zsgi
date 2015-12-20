@@ -48,7 +48,7 @@ def get_utlizacion_equipo(periodo):
         processed[result["obra__obra"]].append(result)
     result = dict(processed.items())
     ids = list(set(x["equipo__equipo__familia_equipo_id"] for x in qs))
-    param = CostoParametro.vigentes.get_vigente_el_periodo(periodo).first()
+    param = CostoParametro.objects.get(periodo=periodo)
     # calculo de lubricantes
     lubris = dict(LubricanteFluidosHidro.objects.filter(
         periodo=periodo, familia_equipo_id__in=ids).values_list('familia_equipo', 'monto_hora'))
@@ -62,16 +62,17 @@ def get_utlizacion_equipo(periodo):
     for k, v in result.items():
         total = 0
         for l in v:
-            total, l["fluido"] = get_calculo_costo(lubris, l, param.dias_mes, total)  # lubris.get(l["equipo__equipo__familia_equipo_id"], 0) * param.horas_dia * l["dias_mes"]
-            total, l["tren"] = get_calculo_costo(tren, l, param.dias_mes, total)  # tren.get(l["equipo__equipo__familia_equipo_id"], 0) * param.horas_dia * l["dias_mes"]
-            total, l["posesion"] = get_calculo_costo(posesion, l, param.dias_mes, total)  # posesion.get(l["equipo__equipo__familia_equipo_id"], 0) * param.horas_dia * l["dias_mes"]
-            total, l["repara"] = get_calculo_costo(repara, l, param.dias_mes, total)  # repara.get(l["equipo__equipo__familia_equipo_id"], 0) * param.horas_dia * l["dias_mes"]
+            total, l["fluido"] = get_calculo_costo(lubris, l, param.dias_mes, total)
+            total, l["tren"] = get_calculo_costo(tren, l, param.dias_mes, total)
+            total, l["posesion"] = get_calculo_costo(posesion, l, param.dias_mes, total)
+            total, l["repara"] = get_calculo_costo(repara, l, param.dias_mes, total)
         totales[v[0]["obra_id"]] = total
 
     return result, totales
 
 
 def get_cc_on_periodo(periodo, totales):
+    param = CostoParametro.objects.get(periodo=periodo)
     # Todas las obras implicadas en costos
     ccs = Obras.objects.filter(es_cc=True).values_list('id', 'codigo', 'prorratea_combustible',
                                                        'prorratea_manoobra', 'prorratea_materiales').order_by("pk")
@@ -113,7 +114,7 @@ def get_cc_on_periodo(periodo, totales):
         values,
         combustible,
         no_prorrat,
-        pro_combustible, multiplicador=13.03)
+        pro_combustible, multiplicador=param.precio_go)
 
     # Mano de obra
     mos = dict(CostoManoObra.objects.filter(periodo=periodo, obra_id__in=obras_ids).values_list('obra_id', 'monto'))
@@ -156,11 +157,21 @@ def get_cc_on_periodo(periodo, totales):
     report.append(headers)
     i = 0
     for x in tipo_costo_headers:
-        l = []
+        l = list()
         l.append(x)
         l.extend(values[i])
         report.append(l)
         i += 1
 
-    return report, total
+    return report, total, dict(zip(no_prorrat, totales))
 
+
+def get_ventas_costos(periodo, totales_costos):
+    """Usando las claves del dict, buscar:
+        Nombre de CC
+        Certificaciones del periodo
+        Subcontratos del periodo
+        Calcular totales
+        Calcular tota
+    """
+    pass
