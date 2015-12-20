@@ -2,7 +2,7 @@ from django.db import models
 
 from core.models import EstServicio, Operarios, Obras, Equipos
 from documento.models import Ri
-from parametros.models import Funcion, Situacion, FamiliaEquipo, TipoCosto
+from parametros.models import Funcion, Situacion, FamiliaEquipo, TipoCosto, Periodo
 
 
 class Alarma(models.Model):
@@ -172,3 +172,17 @@ class PrecioHistorico(models.Model):
         db_table = 'precio_historico'
         verbose_name = 'precio histórico'
         verbose_name_plural = 'precios históricos'
+
+
+class Certificacion(models.Model):
+    periodo = models.ForeignKey(Periodo, verbose_name="Periodo", related_name="certificaciones")
+    obra = models.ForeignKey(Obras, limit_choices_to={'es_cc': True}, related_name="certificaciones")
+    monto = models.FloatField(verbose_name="Monto ($)")
+
+    class Meta:
+        unique_together = ('periodo', 'obra', )
+        verbose_name = 'certificación'
+        verbose_name_plural = 'certificaciones'
+
+    def __str__(self):
+        return "Certificación de {} en {}".format(self.obra, self.periodo)

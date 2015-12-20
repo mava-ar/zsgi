@@ -11,18 +11,18 @@ from zweb_utils.format import currency_format as cur
 
 @admin.register(CostoParametro)
 class CostoParametroAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'horas_dia', 'dias_mes', 'horas_año', 'pesos_usd', 'fecha_alta', )
-    readonly_fields = ('fecha_alta', 'fecha_baja', )
+    list_display = ('periodo', 'horas_dia', 'dias_mes', 'horas_año', 'pesos_usd', 'precio_go')
+    # readonly_fields = ('fecha_alta', 'fecha_baja', )
 
-    def save_model(self, request, obj, form, change):
-        # al modificar, creo uno nuevo y establezco la fecha fin del anterior
-        if change:
-            id = obj.pk
-            obj.pk = None
-            CostoParametro.objects.filter(pk=id).update(fecha_baja=datetime.now())
-        else:
-            CostoParametro.objects.filter(fecha_baja=None).update(fecha_baja=datetime.now())
-        obj.save()
+    # def save_model(self, request, obj, form, change):
+    #     # al modificar, creo uno nuevo y establezco la fecha fin del anterior
+    #     if change:
+    #         id = obj.pk
+    #         obj.pk = None
+    #         CostoParametro.objects.filter(pk=id).update(fecha_baja=datetime.now())
+    #     else:
+    #         CostoParametro.objects.filter(fecha_baja=None).update(fecha_baja=datetime.now())
+    #     obj.save()
 
 
 @admin.register(CostoManoObra)

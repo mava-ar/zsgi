@@ -19,12 +19,6 @@ PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'b%g$gx6ovsx=dzc-7d!8i6m-d2*%g*^-^un7@l(x&)#z&c&d46'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
 ALLOWED_HOSTS = []
 
 
@@ -32,16 +26,10 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = (
     'frontend',
-    # 'admin_tools',
-    # 'admin_tools.theming',
-    # 'admin_tools.menu',
-    # 'admin_tools.dashboard',
+
     'jet.dashboard',
     'jet',
-    #'grappelli',
-    #'material',
-    #'material.admin',
-    #'suit',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -50,6 +38,11 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_extensions',
     'debug_toolbar',
+
+    'djangobower',
+    'pipeline',
+    'bootstrap3',
+    'compressor',
 
     'core',
     'indumentaria',
@@ -69,6 +62,84 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+)
+
+# List of finder classes that know how to find static files in
+# various locations.
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'djangobower.finders.BowerFinder',
+     'pipeline.finders.PipelineFinder',
+     'compressor.finders.CompressorFinder',
+)
+
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, '../media/')
+STATIC_ROOT = os.path.join(BASE_DIR, '../collected_static/')
+BOWER_COMPONENTS_ROOT = os.path.join(BASE_DIR, '../components/')
+PIPELINE_SASS_ARGUMENTS = "-p 8 -I '%s' -I '%s'" % (
+         os.path.join(BOWER_COMPONENTS_ROOT, 'bower_components/bootstrap-sass/assets/stylesheets/'),
+         os.path.join(BOWER_COMPONENTS_ROOT, 'bower_components/bootstrap-sass/assets/fonts/')
+)
+
+PIPELINE_CSS = {
+    'base': {
+        'source_filenames': (
+            'frontend/css/zweb.scss',
+            'font-awesome/css/font-awesome.min.css',
+        ),
+        'output_filename': 'css/base.css',
+        'extra_context': {
+            'media': 'screen,projection',
+        },
+    },
+    'plugins': {
+        'source_filenames': (
+            'datatables/media/css/jquery.dataTables.css',
+            'datatables/media/css/dataTables.bootstrap.css',
+        ),
+        'output_filename': 'css/plugin.css',
+    }
+}
+
+PIPELINE_JS = {
+    'base_js': {
+        'source_filenames': (
+            'jquery/dist/jquery.js',
+            'bootstrap-sass/assets/javascripts/bootstrap.js',
+        ),
+        'output_filename': 'js/base_js.js',
+    },
+    'plugins_js': {
+        'source_filenames': (
+            'datatables/media/js/jquery.dataTables.js',
+            'datatables/media/js/dataTables.bootstrap.js',
+        ),
+        'output_filename': 'js/plugins.js',
+    }
+}
+
+PIPELINE_COMPILERS = (
+    'pipeline.compilers.sass.SASSCompiler',
+)
+PIPELINE_SASS_BINARY = 'sassc'
+PIPELINE_CSS_COMPRESSOR = None
+PIPELINE_JS_COMPRESSOR = None
+
+# django-compressor settings
+COMPRESS_PRECOMPILERS = (
+    ('text/x-scss', 'django_libsass.SassCompiler'),
+)
+
+
+BOWER_INSTALLED_APPS = (
+    'd3#3.3.13',
+    'nvd3#1.7.1',
+    'bootstrap-sass#3.3',
+    'fontawesome#4.3',
+    'datatables#~1.10.10',
 )
 
 ROOT_URLCONF = 'zillepro_web.urls'
@@ -92,25 +163,10 @@ TEMPLATES = [
 WSGI_APPLICATION = 'zillepro_web.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': "zilleweb",
-        'USER': "zille",
-        'PASSWORD': "infomati",
-        "HOST": "127.0.0.1",
-        "POST": 3306
-    }
-}
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
-LANGUAGE_CODE = 'es'
+LANGUAGE_CODE = 'es-ar'
 
 TIME_ZONE = 'America/Argentina/Mendoza'
 
@@ -127,27 +183,13 @@ LOCALE_PATHS = (os.path.join(PROJECT_DIR, 'locale'), )
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = 'static'
-#
-# SUIT_CONFIG = {
-#     'ADMIN_NAME': "Zille - Administración",
-#     'SHOW_REQUIRED_ASTERISK': True,
-#     'CONFIRM_UNSAVED_CHANGES': True,
-#     'MENU_ICONS': {
-#         'sites': 'icon-leaf',
-#         'auth': 'icon-lock',
-#     }
-# }
-
-# GRAPPELLI_ADMIN_TITLE = "ZILLE WEB"
-
 JET_DEFAULT_THEME = 'default'
 
 JET_THEMES = [
     {
-        'theme': 'default', # theme folder name
-        'color': '#47bac1', # color of the theme's button in user menu
-        'title': 'Default' # theme title
+        'theme': 'default',
+        'color': '#47bac1',
+        'title': 'Default'
     },
     {
         'theme': 'green',
@@ -165,3 +207,9 @@ JET_THEMES = [
         'title': 'Gris Claro'
     }
 ]
+
+try:  # import the local settings
+    from .settings_local import *  # noqa
+except ImportError:
+    print('You need to define a settings_local.py')
+    exit()

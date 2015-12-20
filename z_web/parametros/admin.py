@@ -29,4 +29,5 @@ class TipoCostoAdmin(admin.ModelAdmin):
 
 @admin.register(Periodo)
 class PeriodoAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('descripcion', 'fecha_inicio', 'fecha_fin', )
+    ordering = ('-fecha_inicio', )

@@ -16,7 +16,26 @@ class EstacionServicioAdmin(admin.ModelAdmin):
 
 @admin.register(Obras)
 class ObrasAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('codigo', 'obra', 'cuit', 'lugar', 'responsable', )
+    list_filter = ('responsable', 'descuenta_francos', 'descuenta_licencias', "es_cc", )
+    search_fields = ('codigo', 'obra', 'comitente', 'responsable', 'cuit', )
+
+    fieldsets = (
+        (None, {
+            'fields': (('codigo', 'obra', 'fecha_inicio'),
+                       ('cuit', 'lugar', 'plazo'),
+                       ('contrato', 'comitente', 'responsable',))
+        }),
+        ("Configuración General", {
+            'fields': ('tiene_registro', 'tiene_equipo', 'descuenta_francos', 'descuenta_licencias', )
+        }),
+        ("Configuración de registro horario", {
+            'fields': ('tiene_comida', 'tiene_vianda', 'tiene_desarraigo', 'limite_vianda_doble', )
+        }),
+        ("Configuración de costos", {
+            'fields': ('es_cc', 'prorratea_combustible', 'prorratea_manoobra', 'prorratea_materiales', )
+        })
+    )
 
 
 class FrancoLicenciaInlineAdmin(admin.StackedInline):
