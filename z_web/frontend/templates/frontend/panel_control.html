@@ -136,7 +136,8 @@
 
                             <tr>
                                 <td>
-                                    <a href="{% url 'admin:core_equipos_change' line.equipo__equipo_id %}">{{ line.equipo__equipo__n_interno }}</a>
+                                    <a href="{% url 'admin:core_equipos_change' line.registro_equipo__equipo_id %}">
+                                        {{ line.registro_equipo__equipo__n_interno }}</a>
                                 </td>
                                 <td>{{ line.funcion__funcion }}</td>
                                 <td>{{ line.operario__nombre }}</td>
