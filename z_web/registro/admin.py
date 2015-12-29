@@ -2,7 +2,7 @@ from datetime import datetime
 from django.contrib import admin
 
 from .models import (Alarma, Combustible, Partediario, Registro,
-                     RegistroEquipo, Materiales, PrecioHistorico, Certificacion)
+                     RegistroEquipo, PrecioHistorico, Certificacion)
 from zweb_utils.format import currency_format as cur
 
 
@@ -25,17 +25,50 @@ class AlarmaAdmin(admin.ModelAdmin):
     alert_status.allow_tags = True
 
 
-class RegistroAdminInline(admin.TabularInline):
+class RegistroAdminInline(admin.StackedInline):
     model = Registro
     extra = 0
     max_num = 1
+    can_delete = False
+    fieldsets = (
+        (None, {
+            'fields': (('fecha', 'dia', 'especial'), )
+        }),
+        ("Horarios", {
+            'fields': (('hs_salida', 'hs_inicio',),
+                       ('hs_ialmuerzo', 'hs_falmuerzo',),
+                       ('hs_fin', 'hs_llegada', ))
+        }),
+        ("Hs resultantes - Calculados", {
+            'fields': (('hs_normal', 'hs_viaje', 'hs_almuerzo', 'hs_50', ),
+                       ('hs_100', 'hs_total', 'hs_tarea', ))
+        }),
+    )
+    readonly_fields = ('hs_normal', 'hs_viaje', 'hs_almuerzo', 'hs_50', 'hs_100', 'hs_total', 'hs_tarea', )
 
 
-class RegistroEquipoAdminInline(admin.TabularInline):
+class RegistroEquipoAdminInline(admin.StackedInline):
     model = RegistroEquipo
     extra = 0
     max_num = 1
-    raw_id_fields = ("equipo", )
+    can_delete = False
+    fieldsets = (
+        (None, {
+            'fields': (('equipo', ),
+                       ('ini_horo', 'fin_horo'),
+                       ('ini_odo', 'fin_odo'),
+                       ('tarea', ),
+                       )
+        }),
+        ("Combustible", {
+            'fields': (('estacion_servicio', 'est_servicio',),
+                        ('cant_combustible', ))
+        }),
+        ("Materiales transportados", {
+            'fields': (("material", 'cantidad'),
+                       ('distancia', 'viajes',) , 'cantera_cargadero',)
+        })
+    )
 
 
 @admin.register(Partediario)
@@ -43,40 +76,25 @@ class PartediarioAdmin(admin.ModelAdmin):
     model = Partediario
     list_display = ('fecha', 'numero', 'operario', 'obra', 'multifuncion', 'desarraigo',)
     order_by = ('-fecha', )
-    list_select_related = ('operario', 'obra', 'equipo', )
+    list_select_related = ('operario', 'obra', 'registro_equipo', )
     search_fields = ['numero', '^operario__nombre', 'fecha']
     list_filter = ('obra', 'multifuncion', 'desarraigo', )
-    #inlines = [RegistroEquipoAdminInline, RegistroAdminInline, ]
+    inlines = [RegistroEquipoAdminInline, RegistroAdminInline, ]
 
 
-@admin.register(Registro)
-class RegistroAdmin(admin.ModelAdmin):
-    pass
+# @admin.register(Combustible)
+# class CombustibleAdmin(admin.ModelAdmin):
+#     pass
 
 
-@admin.register(RegistroEquipo)
-class RegistroEquipoAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(Materiales)
-class MaterialesAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(Combustible)
-class CombustibleAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(PrecioHistorico)
-class PrecioHistoricoAdmin(admin.ModelAdmin):
-    list_display = ('familia', 'tipo', 'valor_format', 'fechaalta', 'fechabaja')
-    list_filter = ('familia', 'tipo', )
-
-    def valor_format(self, obj):
-        return cur(obj.valor)
-    valor_format.short_description = "Valor ($)"
+# @admin.register(PrecioHistorico)
+# class PrecioHistoricoAdmin(admin.ModelAdmin):
+#     list_display = ('familia', 'tipo', 'valor_format', 'fechaalta', 'fechabaja')
+#     list_filter = ('familia', 'tipo', )
+#
+#     def valor_format(self, obj):
+#         return cur(obj.valor)
+#     valor_format.short_description = "Valor ($)"
 
 
 @admin.register(Certificacion)

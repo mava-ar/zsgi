@@ -6,8 +6,23 @@ from core.models import (Equipos, EstServicio, FrancoLicencia, Obras,
 
 @admin.register(Equipos)
 class Equipos(admin.ModelAdmin):
-    pass
-
+    list_display = ('n_interno', 'familia_equipo', 'equipo', 'marca', 'modelo', 'año', 'dominio', )
+    list_filter = ('marca', 'año', 'familia_equipo', )
+    search_fields = ('n_interno', 'equipo', 'año', 'dominio', 'modelo')
+    ordering = ('n_interno', )
+    list_display_links = ('n_interno', 'equipo', )
+    fieldsets = (
+        (None, {
+            'fields': (('familia_equipo', 'n_interno', 'equipo'),
+                       ('dominio', 'marca', 'modelo', 'año'), )
+        }),
+        ("Vencimientos", {
+            'fields': (('vto_vtv', 'vto_seguro', ),
+                       ('descripcion_vto1', 'vto_otros1', ),
+                       ('descripcion_vto2', 'vto_otros2', ),
+                       ('descripcion_vto3', 'vto_otros3', ))
+        })
+    )
 
 @admin.register(EstServicio)
 class EstacionServicioAdmin(admin.ModelAdmin):
@@ -91,4 +106,13 @@ class OperariosAdmin(admin.ModelAdmin):
 
 @admin.register(Usuario)
 class UsuarioAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('id', 'user', 'rol', 'is_active')
+    list_filter = ('rol',)
+    search_fields = ('user', 'rol', )
+    list_display_links = ('user',)
+    fields = ('user', 'rol', 'fechabaja', )
+
+    def is_active(self, obj):
+        return obj.fechabaja is None
+    is_active.short_description = "Usuario activo"
+    is_active.boolean = True

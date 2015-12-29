@@ -10,7 +10,10 @@ def get_item(dictionary, key):
 
 @register.filter
 def money(val):
-    return currency_format(val)
+    try:
+        return currency_format(val)
+    except TypeError:
+        return currency_format(0)
 
 
 @register.filter

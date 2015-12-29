@@ -21,7 +21,6 @@
     {% compress js %}
         {% javascript 'base_js' %}
         {% javascript 'plugins_js' %}
-        <script src="{% static "d3/d3.min.js" %}" type="text/javascript" charset="utf-8"></script>
-        <script src="{% static "nvd3/build/nv.d3.min.js" %}" type="text/javascript" charset="utf-8"></script>
+        {% javascript 'graphics_js' %}
     {% endcompress %}
 {% endblock %}

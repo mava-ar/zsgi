@@ -156,11 +156,17 @@ class Usuario(models.Model):
     """
     OK
     """
+    ROL = (
+        ("De carga", "De carga"),
+        ("Administrador", "Administrador"),
+    )
     id = models.AutoField(db_column='ID', primary_key=True)
     user = models.CharField(db_column='USER', max_length=16)
     pass_field = models.CharField(db_column='PASS', max_length=128)
-    rol = models.CharField(db_column='ROL', max_length=128)
-    fechabaja = models.DateTimeField(db_column='FECHABAJA', blank=True, null=True)
+    rol = models.CharField(db_column='ROL', max_length=128, choices=ROL)
+    fechabaja = models.DateTimeField(
+            db_column='FECHABAJA', blank=True, null=True, verbose_name="Fecha de baja",
+            help_text="Si la fecha de baja no está establecida, el usuario está activo.")
 
     class Meta:
         verbose_name = "usuario de ZProjects"
