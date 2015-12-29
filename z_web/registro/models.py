@@ -172,8 +172,8 @@ class PrecioHistorico(models.Model):
 
 
 class Certificacion(models.Model):
-    periodo = models.ForeignKey(Periodo, verbose_name="Periodo", related_name="certificaciones")
-    obra = models.ForeignKey(Obras, limit_choices_to={'es_cc': True}, related_name="certificaciones")
+    periodo = models.ForeignKey(Periodo, verbose_name="Periodo", related_name="certificaciones_periodo")
+    obra = models.ForeignKey(Obras, limit_choices_to={'es_cc': True}, related_name="certificaciones_obras")
     monto = models.FloatField(verbose_name="Monto ($)")
 
     class Meta:

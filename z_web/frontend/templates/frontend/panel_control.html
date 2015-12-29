@@ -27,141 +27,16 @@
     </ul>
     <div class="tab-content">
         <div id="venta-costos" class="tab-pane fade in active">
-
+            <h2>Resumen de COSTOS vs VENTAS </h2>
+            {%  include 'frontend/includes/panel_control_costos_ventas.html' %}
         </div>
         <div id="resumen-costo" class="tab-pane fade">
             <h2>Resumen de costos</h2>
-            <div>
-            {% if resumen_costos %}
-                <table class="table" id="table-resumen">
-                    {% for cc in resumen_costos %}
-                        {% if forloop.first %}
-                            <thead>
-                            <tr>
-                                {% for head in cc %}
-                                    <th>
-                                        {{ head }}
-                                    </th>
-                                {% endfor %}
-                            </tr>
-                            </thead>
-                        {% elif forloop.last %}
-                            <thead>
-                            <tr>
-                                {% for head in cc %}
-                                    <th>
-                                        {% if forloop.first %}
-                                            {{ head }}
-                                        {% else %}
-                                            {{ head|money }}
-                                        {% endif %}
-                                    </th>
-                                {% endfor %}
-                            </tr>
-                            </thead>
-                        {% else %}
-                            <tr>
-                                {% for cell in cc %}
-
-                                    <td>
-                                        {% if forloop.first %}
-                                            {{ cell }}
-                                        {% else %}
-                                            {{ cell|money }}
-                                        {% endif %}
-                                    </td>
-                                {% endfor %}
-                            </tr>
-                        {% endif %}
-                    {% endfor %}
-                </table>
-                <p class="alert alert-danger">
-                    TOTAL: <strong>{{ total|money }}</strong>
-                </p>
-            {% else %}
-                <p class="alert alert-warning">
-                    No existen datos para el periodo seleccionado.
-                </p>
-            {% endif %}
-                <div class="col-md-8">
-                    <div class="panel panel-info">
-                        <div class="panel-heading">
-                            Resumen de costos - Totales
-                        </div>
-                        <div class="panel-body">
-                            <div class="resumen" id="resumen">
-                                <svg style="width: 100%;height:500px;"></svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="panel panel-info">
-                        <div class="panel-heading">
-                            Resumen de costos - Percentual
-                        </div>
-                        <div class="panel-body">
-                            <div class="resumen" id="resumen-pie">
-                                <svg style="width: 100%;height:500px;"></svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {%  include "frontend/includes/panel_control_resumen_costos.html" %}
         </div>
         <div id="listado-equipo-cc" class="tab-pane fade">
-            {% if equipos.items %}
-                <h2>Utilización de equipos por CC</h2>
-                <table class="table" id="table-equipos">
-                    {% for name,values in equipos.items %}
-                        <thead>
-                        <tr>
-                            <th colspan="8">{{ name }}</th>
-                        </tr>
-                        <tr>
-
-                            <th>N° Interno</th>
-                            <th>Función</th>
-                            <th>Operario</th>
-                            <th>Días en el mes</th>
-                            <th>Lubricantes y fluidos</th>
-                            <th>Tren de rodaje</th>
-                            <th>Costos de posesión</th>
-                            <th>Reserva para reparaciones</th>
-
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for line in values %}
-
-                            <tr>
-                                <td>
-                                    <a href="{% url 'admin:core_equipos_change' line.registro_equipo__equipo_id %}">
-                                        {{ line.registro_equipo__equipo__n_interno }}</a>
-                                </td>
-                                <td>{{ line.funcion__funcion }}</td>
-                                <td>{{ line.operario__nombre }}</td>
-                                <td>{{ line.dias_mes }}</td>
-                                <td>{{ line.fluido|money }}</td>
-                                <td>{{ line.tren|money }}</td>
-                                <td>{{ line.posesion|money }}</td>
-                                <td>{{ line.repara|money }}</td>
-                            </tr>
-                        {% endfor %}
-                        <tr>
-                            <td colspan="3"></td>
-                            <td>TOTAL:</td>
-                            <td colspan="4"><strong>{{ totales|get_item:values.0.obra_id|money }}</strong></td>
-
-                        </tr>
-                        </tbody>
-                    {% endfor %}
-                </table>
-            {% else %}
-                <p class="alert alert-warning">
-                    No existen datos para el periodo seleccionado.
-                </p>
-            {% endif %}
+            <h2>Utilización de equipos por CC</h2>
+            {% include "frontend/includes/panel_control_listado_equipos.html" %}
         </div>
 
     </div>
@@ -173,79 +48,26 @@
             $(document).ready(function () {
                 var data = [
                     {% if resumen_costos %}
-                            {% for i in resumen_costos|extraer_data_grafico %}{
+                            {% for i in resumen_costos|extraer_data_grafico_costos:-1 %}{
                             x: "{{i.0}}", y: {{i.1|js_format}}
                         }{% if not forloop.last %}, {% endif %}{% endfor %}
                     {% endif %}
                 ];
-
+                var ventas = [
+                    {% if cert_costos %}
+                        {% for i in cert_costos|extraer_data_grafico_resumen:2 %}{
+                            x: "{{ i.0 }}", y: {{ i.1|js_format }}
+                        }{%  if not forloop.last %}, {% endif %}{% endfor %}
+                    {% endif %}
+                ]
+                nv.addGraph(graphCostosVentasBar(data, ventas));
                 $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                    var target = $(e.target).attr("href") // activated tab
+                    var target = $(e.target).attr("href")
                     if (target == "#resumen-costo") {
-                        nv.addGraph(function () {
-                            var chart = nv.models.discreteBarChart()
-                                    .options({
-                                        margin: {left: 150, bottom: 220},
-                                        showXAxis: true,
-                                        showYAxis: true,
-                                        transitionDuration: 250,
-
-                                        noData: "No hay datos de costos para el periodo seleccionado.",
-                                    });
-
-                            chart.xAxis
-                                    .axisLabel("CC")
-                                    .rotateLabels(-45)
-                                    .tickFormat(function (d) {
-                                        return d
-                                    });
-                            var commasFormatter = d3.format(",");
-                            chart.yAxis
-                                    .axisLabel('')
-                                    .tickFormat(function (d) {
-                                        return "$" + commasFormatter(d);
-                                    });
-
-                            d3.select("#resumen>svg")
-                                    .datum([
-                                        {
-                                            values: data,
-                                            key: "Resumen de costos",
-                                            color: "#2ca02c"
-                                        }])
-                                    .transition().duration(1200)
-                                    .call(chart);
-
-
-                            nv.utils.windowResize(function () {
-                                chart.update();
-                            });
-                            return chart;
-                        });
-
-                        nv.addGraph(function () {
-
-                            var commasFormatter = d3.format(",");
-                            var chart = nv.models.pieChart()
-                                    .options({
-                                        showXAxis: true,
-                                        showYAxis: true,
-                                        transitionDuration: 250,
-                                        noData: "No hay datos de costos para el periodo seleccionado.",
-                                        labelType: "percent",
-                                        donut: true,
-                                        donutRatio: 0.3
-                                    });
-
-                            d3.select("#resumen-pie>svg")
-                                    .datum(data)
-                                    .transition().duration(1200)
-                                    .call(chart);
-                            nv.utils.windowResize(function () {
-                                chart.update();
-                            });
-                            return chart;
-                        });
+                        nv.addGraph(graphResumenCostosBar(data));
+                        nv.addGraph(graphResumenCostosPie(data));
+                    } else if (target == "#venta-costos"){
+                        nv.addGraph(graphCostosVentasBar(data, ventas));
                     }
                 });
 

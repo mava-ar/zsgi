@@ -1,0 +1,78 @@
+{% load frontend_tags %}
+<div>
+    {% if resumen_costos %}
+        <table class="table" id="table-resumen">
+            {% for cc in resumen_costos %}
+                {% if forloop.first %}
+                    <thead>
+                    <tr>
+                        {% for head in cc %}
+                            <th>
+                                {{ head }}
+                            </th>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                {% elif forloop.last %}
+                    <thead>
+                    <tr>
+                        {% for head in cc %}
+                            <th>
+                                {% if forloop.first %}
+                                    {{ head }}
+                                {% else %}
+                                    {{ head|money }}
+                                {% endif %}
+                            </th>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                {% else %}
+                    <tr>
+                        {% for cell in cc %}
+
+                            <td>
+                                {% if forloop.first %}
+                                    {{ cell }}
+                                {% else %}
+                                    {{ cell|money }}
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+        <p class="alert alert-danger">
+            TOTAL: <strong>{{ total|money }}</strong>
+        </p>
+    {% else %}
+        <p class="alert alert-warning">
+            No existen datos para el periodo seleccionado.
+        </p>
+    {% endif %}
+    <div class="col-md-8">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                Resumen de costos - Totales
+            </div>
+            <div class="panel-body">
+                <div class="resumen" id="resumen">
+                    <svg style="width: 100%;height:500px;"></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                Resumen de costos - Percentual
+            </div>
+            <div class="panel-body">
+                <div class="resumen" id="resumen-pie">
+                    <svg style="width: 100%;height:500px;"></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

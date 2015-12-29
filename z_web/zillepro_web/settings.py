@@ -118,6 +118,14 @@ PIPELINE_JS = {
             'datatables/media/js/dataTables.bootstrap.js',
         ),
         'output_filename': 'js/plugins.js',
+    },
+    'graphics_js': {
+        'source_filenames': (
+            "d3/d3.min.js",
+            "nvd3/build/nv.d3.min.js",
+            'frontend/js/graphics.js',
+        ),
+        'output_filename': 'js/zille.graphics.js',
     }
 }
 

@@ -156,8 +156,8 @@ class ServicioPrestadoUN(models.Model):
     """
     Servicios prestados a otras Unidades de Negocio
     """
-    periodo = models.ForeignKey(Periodo, verbose_name="Periodo", related_name="costos_servicios_prestados")
-    obra = models.ForeignKey(Obras, verbose_name="Centro de costo", related_name="costos_servicios_prestados")
+    periodo = models.ForeignKey(Periodo, verbose_name="Periodo", related_name="costos_servicios_xperiodo")
+    obra = models.ForeignKey(Obras, verbose_name="Centro de costo", related_name="costos_servicios_xobra")
     monto = models.FloatField(verbose_name="Costo ($)")
 
     class Meta:

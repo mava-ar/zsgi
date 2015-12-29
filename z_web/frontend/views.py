@@ -28,7 +28,7 @@ def index(request):
                                  mark_safe("No están definidos los <a href='/costos/costoparametro'>parámetros de costos</a> para el "
                                            "periodo {}".format(periodo)))
         try:
-            context["cert-costos"] = get_ventas_costos(periodo, totales_costos)
+            context["cert_costos"], context["costos_ventas_total"] = get_ventas_costos(periodo, totales_costos)
         except Exception:
             pass
     else:
@@ -36,6 +36,3 @@ def index(request):
     return render_to_response("frontend/panel_control.html",
                               context,
                               context_instance=RequestContext(request))
-
-
-
