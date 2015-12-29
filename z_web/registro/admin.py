@@ -82,19 +82,19 @@ class PartediarioAdmin(admin.ModelAdmin):
     inlines = [RegistroEquipoAdminInline, RegistroAdminInline, ]
 
 
-@admin.register(Combustible)
-class CombustibleAdmin(admin.ModelAdmin):
-    pass
+# @admin.register(Combustible)
+# class CombustibleAdmin(admin.ModelAdmin):
+#     pass
 
 
-@admin.register(PrecioHistorico)
-class PrecioHistoricoAdmin(admin.ModelAdmin):
-    list_display = ('familia', 'tipo', 'valor_format', 'fechaalta', 'fechabaja')
-    list_filter = ('familia', 'tipo', )
-
-    def valor_format(self, obj):
-        return cur(obj.valor)
-    valor_format.short_description = "Valor ($)"
+# @admin.register(PrecioHistorico)
+# class PrecioHistoricoAdmin(admin.ModelAdmin):
+#     list_display = ('familia', 'tipo', 'valor_format', 'fechaalta', 'fechabaja')
+#     list_filter = ('familia', 'tipo', )
+#
+#     def valor_format(self, obj):
+#         return cur(obj.valor)
+#     valor_format.short_description = "Valor ($)"
 
 
 @admin.register(Certificacion)

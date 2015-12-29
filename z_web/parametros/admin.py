@@ -22,9 +22,9 @@ class FamiliaEquipoAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(TipoCosto)
-class TipoCostoAdmin(admin.ModelAdmin):
-    pass
+# @admin.register(TipoCosto)
+# class TipoCostoAdmin(admin.ModelAdmin):
+#     pass
 
 
 @admin.register(Periodo)

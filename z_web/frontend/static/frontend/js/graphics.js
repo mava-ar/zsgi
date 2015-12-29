@@ -68,7 +68,7 @@ var graphResumenCostosPie = function (serie1) {
 var graphCostosVentasBar = function(serie1, serie2) {
     var chart = nv.models.multiBarChart().options({
         transitionDuration: 250,
-        noData: "No hay datos de costos para el periodo seleccionado.",
+        noData: "No hay datos para el periodo seleccionado.",
         margin: {left: 150, bottom: 220},
         showXAxis: true,
         showYAxis: true,
