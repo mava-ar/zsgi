@@ -1,7 +1,7 @@
 from datetime import datetime
 from django.contrib import admin
 
-from .models import (Alarma, Combustible, Partediario, Registro,
+from .models import (Alarma, Combustible, Partediario, Registro, Materiales,
                      RegistroEquipo, PrecioHistorico, Certificacion)
 from zweb_utils.format import currency_format as cur
 
@@ -64,10 +64,18 @@ class RegistroEquipoAdminInline(admin.StackedInline):
             'fields': (('estacion_servicio', 'est_servicio',),
                         ('cant_combustible', ))
         }),
+    )
+
+
+class MaterialesAdminInline(admin.StackedInline):
+    model = Materiales
+    extra = 0
+    fieldsets = (
         ("Materiales transportados", {
-            'fields': (("material", 'cantidad'),
-                       ('distancia', 'viajes',) , 'cantera_cargadero',)
-        })
+            'fields': (("material", 'cantidad',),
+                       ('distancia', 'viajes',),
+                       'cantera_cargadero',)
+        }),
     )
 
 
@@ -79,7 +87,7 @@ class PartediarioAdmin(admin.ModelAdmin):
     list_select_related = ('operario', 'obra', 'registro_equipo', )
     search_fields = ['numero', '^operario__nombre', 'fecha']
     list_filter = ('obra', 'multifuncion', 'desarraigo', )
-    inlines = [RegistroEquipoAdminInline, RegistroAdminInline, ]
+    inlines = [RegistroEquipoAdminInline, RegistroAdminInline, MaterialesAdminInline, ]
 
 
 # @admin.register(Combustible)
