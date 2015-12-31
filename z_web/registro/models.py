@@ -111,11 +111,11 @@ class RegistroEquipo(models.Model):
     estacion_servicio = models.ForeignKey(EstServicio, verbose_name="Plataforma de combustible", db_column='IDSERVICIO', blank=True, null=True)
 
     # añado materiales a este modelo
-    material = models.CharField(verbose_name="Material Transportado", choices=MATERIALES, max_length=255, blank=True, null=True)
-    cantidad = models.FloatField(verbose_name="Cantidad", blank=True, null=True)
-    distancia = models.FloatField(verbose_name="Distancia", blank=True, null=True)
-    viajes = models.PositiveSmallIntegerField(verbose_name="Cantidad de viajes", blank=True, null=True)
-    cantera_cargadero = models.CharField(verbose_name="Cantera/Cargadero", max_length=255, blank=True, null=True)
+    # material = models.CharField(verbose_name="Material Transportado", choices=MATERIALES, max_length=255, blank=True, null=True)
+    # cantidad = models.FloatField(verbose_name="Cantidad", blank=True, null=True)
+    # distancia = models.FloatField(verbose_name="Distancia", blank=True, null=True)
+    # viajes = models.PositiveSmallIntegerField(verbose_name="Cantidad de viajes", blank=True, null=True)
+    # cantera_cargadero = models.CharField(verbose_name="Cantera/Cargadero", max_length=255, blank=True, null=True)
 
     class Meta:
         db_table = 'registro_equipo'
@@ -128,12 +128,12 @@ class RegistroEquipo(models.Model):
 
 class Partediario(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)
-    situacion = models.ForeignKey(Situacion, db_column='SITUACION', default=1)
+    situacion = models.ForeignKey(Situacion, db_column='SITUACION', default=1, null=True)
 
     # numero no debe ser vacio ni repetirse
     numero = models.CharField(db_column='NUMERO', max_length=16, blank=True, null=True)
     operario = models.ForeignKey(Operarios, db_column='OPERARIO')
-    funcion = models.ForeignKey(Funcion, db_column='FUNCION')
+    funcion = models.ForeignKey(Funcion, db_column='FUNCION', null=True)
     fecha = models.DateField(db_column='FECHA')
     obra = models.ForeignKey(Obras, db_column='OBRA', blank=True, null=True)
     observaciones = models.TextField(db_column='OBSERVACIONES', blank=True, null=True)
@@ -183,3 +183,34 @@ class Certificacion(models.Model):
 
     def __str__(self):
         return "Certificación de {} en {}".format(self.obra, self.periodo)
+
+
+class Materiales(models.Model):
+
+    MATERIALES = (
+        ('agua', "Agua"),
+        ('arcilla', "Arcilla"),
+        ('arena', "Arena"),
+        ('calcareo', "Calcareo"),
+        ('destape', "Destape"),
+        ('otro', "Otro"),
+        ('relleno', "Relleno"),
+        ('yeso', "Yeso"),
+    )
+    id = models.AutoField(db_column='ID', primary_key=True)
+    material = models.CharField(db_column='MATERIAL', choices=MATERIALES, max_length=255, blank=True, null=True)
+    cantidad = models.FloatField(db_column='CANTIDAD', blank=True, null=True)
+    distancia = models.FloatField(db_column='DISTANCIA', blank=True, null=True)
+    viajes = models.PositiveSmallIntegerField(db_column='VIAJES', blank=True, null=True)
+    cantera_cargadero = models.CharField(db_column='CANTERA_CARGADERO', max_length=255, blank=True, null=True)
+    partediario = models.ForeignKey(Partediario, verbose_name="Parte Diario", related_name="materiales_transportados", null=True)
+
+    class Meta:
+        db_table = 'materiales'
+        verbose_name = "material transportado"
+        verbose_name_plural = "materiales transportados"
+
+    def __str__(self):
+        return "({}) {} - {}".format(
+            self.cantidad, self.material,
+            self.cantera_cargadero if self.cantera_cargadero else "Cantera/Cargadero no especificado")
