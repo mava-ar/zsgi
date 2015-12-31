@@ -24,6 +24,7 @@ class Equipos(admin.ModelAdmin):
         })
     )
 
+
 @admin.register(EstServicio)
 class EstacionServicioAdmin(admin.ModelAdmin):
     pass
