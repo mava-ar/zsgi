@@ -59,15 +59,22 @@
                             x: "{{ i.0 }}", y: {{ i.1|js_format }}
                         }{%  if not forloop.last %}, {% endif %}{% endfor %}
                     {% endif %}
-                ]
-                nv.addGraph(graphCostosVentasBar(data, ventas));
+                ];
+                var servicios = [
+                    {% if cert_costos %}
+                        {% for i in cert_costos|extraer_data_grafico_resumen:3 %}{
+                            x: "{{ i.0 }}", y: {{ i.1|js_format }}
+                        }{%  if not forloop.last %}, {% endif %}{% endfor %}
+                    {% endif %}
+                ];
+                nv.addGraph(graphCostosVentasBar(data, ventas, servicios));
                 $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                     var target = $(e.target).attr("href")
                     if (target == "#resumen-costo") {
                         nv.addGraph(graphResumenCostosBar(data));
                         nv.addGraph(graphResumenCostosPie(data));
                     } else if (target == "#venta-costos"){
-                        nv.addGraph(graphCostosVentasBar(data, ventas));
+                        nv.addGraph(graphCostosVentasBar(data, ventas, servicios));
                     }
                 });
 

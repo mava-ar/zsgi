@@ -65,7 +65,7 @@ graphResumenCostosPie = function (serie1) {
     return chart;
 };
 
-graphCostosVentasBar = function(serie1, serie2) {
+graphCostosVentasBar = function(serie1, serie2, serie3) {
     var chart = nv.models.multiBarChart().options({
         transitionDuration: 250,
         noData: "No hay datos para el periodo seleccionado.",
@@ -101,7 +101,14 @@ graphCostosVentasBar = function(serie1, serie2) {
                 key: "Ventas",
                 color: "#2ca02c"
 
-            }])
+            },
+            {
+                values: serie3,
+                key: "Serv. Prestados a O/S",
+                color: "#31708F"
+
+            },
+        ])
             .transition()
             .duration(1200)
             .call(chart);
