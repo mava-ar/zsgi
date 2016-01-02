@@ -2,7 +2,7 @@
  * Created by matuuar on 28/12/15.
  */
 
-var graphResumenCostosBar = function (serie1) {
+graphResumenCostosBar = function (serie1) {
     var chart = nv.models.discreteBarChart()
         .options({
             margin: {left: 150, bottom: 220},
@@ -42,7 +42,7 @@ var graphResumenCostosBar = function (serie1) {
     return chart;
 };
 
-var graphResumenCostosPie = function (serie1) {
+graphResumenCostosPie = function (serie1) {
 
     var chart = nv.models.pieChart()
         .options({
@@ -65,7 +65,7 @@ var graphResumenCostosPie = function (serie1) {
     return chart;
 };
 
-var graphCostosVentasBar = function(serie1, serie2) {
+graphCostosVentasBar = function(serie1, serie2) {
     var chart = nv.models.multiBarChart().options({
         transitionDuration: 250,
         noData: "No hay datos para el periodo seleccionado.",

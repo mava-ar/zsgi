@@ -14,14 +14,14 @@ def get_calculo_costo(costos, valores, horas_dia, total=0):
     return total, val
 
 
-def calcular_item_costo(report, datos, no_prorrat, prorrat=[], multiplicador=1):
+def calcular_item_costo(report, datos, no_prorrat, prorrat=None, multiplicador=1):
     lista = []
 
     for x in no_prorrat:
         lista.append(datos.get(x, 0) * multiplicador if datos.get(x, 0) else 0)
     report.append(lista)
 
-    if prorrat:
+    if not prorrat is None:
         lista_prorrat = []
         total_prorrateo = 0
         for x in prorrat:
@@ -167,12 +167,14 @@ def get_cc_on_periodo(periodo, totales):
 
 
 def get_ventas_costos(periodo, totales_costos):
-    """Usando las claves del dict, buscar:
+    """
+    Usando las claves del dict, buscar:
         Nombre de CC
         Certificaciones del periodo
         Subcontratos del periodo
         Calcular totales
         Calcular tota
+        
     """
     ids = list(totales_costos.keys())
     obras = dict(Obras.objects.filter(id__in=ids).values_list('id', 'codigo'))
