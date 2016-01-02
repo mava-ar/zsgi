@@ -3,9 +3,9 @@ from django.contrib import admin
 from .models import Situacion, Parametro, Funcion, FamiliaEquipo, TipoCosto, Periodo
 
 
-@admin.register(Situacion)
-class SituacionAdmin(admin.ModelAdmin):
-    pass
+# @admin.register(Situacion)
+# class SituacionAdmin(admin.ModelAdmin):
+#     pass
 
 
 @admin.register(Parametro)
@@ -16,6 +16,7 @@ class ParametroAdmin(admin.ModelAdmin):
 @admin.register(Funcion)
 class FuncionAdmin(admin.ModelAdmin):
     pass
+
 
 @admin.register(FamiliaEquipo)
 class FamiliaEquipoAdmin(admin.ModelAdmin):
