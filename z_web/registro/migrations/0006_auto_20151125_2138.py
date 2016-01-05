@@ -14,12 +14,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='materiales',
             name='cantidad',
-            field=models.FloatField(blank=True, db_column='CANTIDAD', null=True),
+            field=models.CharField(max_length=64, null=True, blank=True, db_column='CANTIDAD'),
         ),
         migrations.AlterField(
             model_name='materiales',
             name='distancia',
-            field=models.FloatField(blank=True, db_column='DISTANCIA', null=True),
+            field=models.CharField(max_length=64, blank=True, db_column='DISTANCIA', null=True),
         ),
         migrations.AlterField(
             model_name='materiales',

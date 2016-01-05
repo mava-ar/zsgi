@@ -12,9 +12,9 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='riitem',
+           model_name='riitem',
             name='cantidad',
-            field=models.PositiveIntegerField(default=1, blank=True, null=True),
+            field=models.CharField(max_length=255, null=True, blank=True),
         ),
         migrations.AlterField(
             model_name='riitem',

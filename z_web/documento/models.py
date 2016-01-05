@@ -31,7 +31,7 @@ class RiItem(models.Model):
     """
     riitemid = models.AutoField(db_column='riItemId', primary_key=True)
     riid = models.ForeignKey(Ri, db_column='riId', related_name="items", null=True)
-    cantidad = models.PositiveIntegerField(blank=True, null=True, default=1)
+    cantidad = models.CharField(max_length=255, blank=True, null=True)
     unidad = models.CharField(max_length=45, blank=True, null=True)
     detalle = models.TextField(blank=True, null=True)
     observacion = models.TextField(blank=True, null=True)
