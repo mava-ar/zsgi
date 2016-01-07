@@ -88,7 +88,10 @@ class Obras(models.Model):
     cuit = models.CharField(db_column='CUIT', max_length=255, blank=True, null=True)
     lugar = models.CharField(db_column='LUGAR', max_length=255, blank=True, null=True)
     plazo = models.CharField(db_column='PLAZO', max_length=255, blank=True, null=True)
-    fecha_inicio = models.CharField(db_column='FECHA_INICIO', max_length=255, blank=True, null=True)
+    fecha_inicio = models.DateField(db_column='FECHA_INICIO', blank=True, null=True)
+    fecha_fin = models.DateField(verbose_name="Fecha de finalización", blank=True, null=True,
+                                 help_text="Si está establecido, esta obra o CC no será mostrado en listas "
+                                           "desplegables (se considera inactiva).")
     responsable = models.CharField(db_column='RESPONSABLE', max_length=255, blank=True, null=True)
     tiene_comida = models.BooleanField(db_column='TIENE_COMIDA', default=True)
     tiene_vianda = models.BooleanField(db_column='TIENE_VIANDA', default=True)
@@ -99,8 +102,9 @@ class Obras(models.Model):
     descuenta_francos = models.BooleanField(verbose_name="Se utiliza para francos", db_column='DESCUENTA_FRANCOS', default=False)
     descuenta_licencias = models.BooleanField(verbose_name="Se utiliza para licencias anuales", db_column='DESCUENTA_LICENCIAS', default=False)
     es_cc = models.BooleanField(verbose_name="Tratar como CC", default=False,
-                                help_text="Si está seleccionada, la obra es considerada un CC y se utiliza "
-                                          "para los cálculos de costos")
+                                help_text="Si está seleccionada, la obra es considerada un Centro de Costos (CC)")
+    incluir_en_costos = models.BooleanField(verbose_name="Incluir en cálculos de costos", default=False,
+                                            help_text="Si está seleccionado, el CC será utilizado en el cálculos de costos.")
     prorratea_combustible = models.BooleanField(verbose_name="¿Prorratea Combustible?", default=False,
                                                 help_text="Si está seleccionada, los costos de combustibles se "
                                                           "prorratean en los demás CC")
@@ -119,6 +123,9 @@ class Obras(models.Model):
     def __str__(self):
         return "{} - {}".format(self.codigo, self.obra)
 
+    @property
+    def esta_activa(self):
+        return self.fecha_fin is None
 
 class Operarios(models.Model):
     """
