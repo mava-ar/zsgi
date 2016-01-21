@@ -74,7 +74,7 @@ def get_utlizacion_equipo(periodo):
 def get_cc_on_periodo(periodo, totales):
     param = CostoParametro.objects.get(periodo=periodo)
     # Todas las obras implicadas en costos
-    ccs = Obras.objects.filter(es_cc=True).values_list('id', 'codigo', 'prorratea_combustible',
+    ccs = Obras.objects.filter(incluir_en_costos=True).values_list('id', 'codigo', 'prorratea_combustible',
                                                        'prorratea_manoobra', 'prorratea_materiales').order_by("pk")
     # Ids de obras tipo CC (con costos prorrateables y sin)
     obras_ids = [x[0] for x in ccs]
