@@ -1,0 +1,9 @@
+Django>1.8,<1.9
+mysqlclient
+django-jet
+django-bower
+django-pipeline
+django-bootstrap3
+django-compressor
+libsass
+xlsxwriter
