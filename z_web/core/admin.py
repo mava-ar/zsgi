@@ -32,13 +32,13 @@ class EstacionServicioAdmin(admin.ModelAdmin):
 
 @admin.register(Obras)
 class ObrasAdmin(admin.ModelAdmin):
-    list_display = ('codigo', 'obra', 'cuit', 'lugar', 'responsable', )
+    list_display = ('codigo', 'obra', 'cuit', 'lugar', 'responsable', 'is_active', )
     list_filter = ('responsable', 'descuenta_francos', 'descuenta_licencias', "es_cc", )
     search_fields = ('codigo', 'obra', 'comitente', 'responsable', 'cuit', )
-
+    ordering = ('fecha_fin', 'codigo', )
     fieldsets = (
         (None, {
-            'fields': (('codigo', 'obra', 'fecha_inicio'),
+            'fields': (('codigo', 'obra', 'fecha_inicio', 'fecha_fin'),
                        ('cuit', 'lugar', 'plazo'),
                        ('contrato', 'comitente', 'responsable',))
         }),
@@ -49,9 +49,13 @@ class ObrasAdmin(admin.ModelAdmin):
             'fields': ('tiene_comida', 'tiene_vianda', 'tiene_desarraigo', 'limite_vianda_doble', )
         }),
         ("Configuración de costos", {
-            'fields': ('es_cc', 'prorratea_combustible', 'prorratea_manoobra', 'prorratea_materiales', )
+            'fields': ('es_cc', 'incluir_en_costos', 'prorratea_combustible', 'prorratea_manoobra', 'prorratea_materiales', )
         })
     )
+    def is_active(self, obj):
+        return obj.esta_activa
+    is_active.short_description = "¿Activa?"
+    is_active.boolean = True
 
 
 class FrancoLicenciaInlineAdmin(admin.StackedInline):
