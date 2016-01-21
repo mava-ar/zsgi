@@ -5,7 +5,25 @@ from core.models import Obras
 from parametros.models import Periodo, FamiliaEquipo
 
 
-class CostoManoObra(models.Model):
+class CalculosMixin:
+
+    def recalcular_valor(self, parametros):
+        """
+        Esta funcion recibe un objeto parámetro, cual tiene un nuevo valor del dolar,
+        y recalcula el item para ese monto.
+        :param parametros:
+        :return:
+        """
+        nuevo_pd = parametros.pesos_usd
+        viejo_pd = self.periodo.parametros_costos.pesos_usd
+        if hasattr(self, 'monto'):
+            self.monto = nuevo_pd * self.monto / viejo_pd
+        elif hasattr(self, 'monto_mes'):
+            self.monto_mes = nuevo_pd * self.monto_mes / viejo_pd
+        elif hasattr(self, 'monto_hora'):
+            self.monto_hora = nuevo_pd * self.monto_hora / viejo_pd
+
+class CostoManoObra(models.Model, CalculosMixin):
     """
     Costos de mano de obra por CC y periodo
     """
@@ -22,7 +40,7 @@ class CostoManoObra(models.Model):
         return "{} - {}".format(self.obra, self.periodo)
 
 
-class CostoSubContrato(models.Model):
+class CostoSubContrato(models.Model, CalculosMixin):
     """
     Costos por subcontratos
     """
@@ -44,7 +62,7 @@ class CostoSubContrato(models.Model):
             "({})".format(self.descripcion) if self.descripcion else '')
 
 
-class AbstractCosto(models.Model):
+class AbstractCosto(models.Model, CalculosMixin):
     """
     Clase genérica para costos comunes
     """
@@ -101,7 +119,7 @@ class CostoPosesion(AbstractCosto):
         verbose_name_plural = "costos de posesión"
 
 
-class MaterialesTotal(models.Model):
+class MaterialesTotal(models.Model, CalculosMixin):
     """
     Total de costo de materiales por periodo
     """
@@ -162,7 +180,7 @@ class CostoParametro(models.Model):
         verbose_name_plural = "parametros de costos"
 
 
-class ServicioPrestadoUN(models.Model):
+class ServicioPrestadoUN(models.Model, CalculosMixin):
     """
     Servicios prestados a otras Unidades de Negocio
     """

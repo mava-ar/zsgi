@@ -71,6 +71,14 @@ transition: background 0.3s ease 0s, box-shadow 0.3s ease 0s, border 0.3s ease 0
        }
    }
 }
+
+.form-periodo {
+    margin-bottom: 10px;
+}
+
+input[type=checkbox] {
+    display: inherit;
+}
 /* Override jet themes */
 #content {
     padding: 5px 20px;

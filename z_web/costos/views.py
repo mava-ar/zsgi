@@ -1,5 +1,5 @@
 from functools import partial, wraps
-
+from django.apps import apps
 from django.contrib import messages
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
@@ -15,11 +15,73 @@ from core.models import Obras
 from parametros.models import Periodo, FamiliaEquipo
 from .models import (CostoSubContrato, CostoManoObra, CostoPosesion, ReserveReparaciones, TrenRodaje,
                      ServicioPrestadoUN, MaterialesTotal, LubricanteFluidosHidro, CostoParametro)
-from .forms import PeriodoSelectForm, CostoItemForm, CostoItemFamiliaForm
+from .forms import PeriodoSelectForm, CostoItemForm, CostoItemFamiliaForm, CopiaCostoForm
 
 
 class Index(TemplateView):
     template_name = "costos/ingreso_masivo.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(Index, self).get_context_data(**kwargs)
+        if 'copia_form' not in kwargs:
+            context["copia_form"] = CopiaCostoForm()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        p_form = CopiaCostoForm(self.request.POST)
+
+        if p_form.is_valid():
+            return self.form_valid(p_form)
+        else:
+            return self.form_invalid(p_form)
+
+    def form_invalid(self, p_form):
+        return self.render_to_response(
+            self.get_context_data(copia_form=p_form))
+
+    def form_valid(self, form):
+        tipos = form.cleaned_data["tipo_costos"]
+        de_periodo= form.cleaned_data["de_periodo"]
+        a_periodo = form.cleaned_data["a_periodo"]
+        recalcular = form.cleaned_data["recalcular"]
+        if recalcular:
+            try:
+                des_param = CostoParametro.objects.get(periodo=a_periodo)
+                # ori_param = CostoParametro.objects.get(periodo=de_periodo)
+            except CostoParametro.DoesNotExist:
+                messages.add_message(self.request, messages.ERROR,
+                                     mark_safe("Asegúrese de definir los <a href='/costos/costoparametro'>parámetros "
+                                               "de costos</a> para ambos periodos seleccionados."))
+                return self.form_invalid(form)
+        copia_dict = dict()
+        for costo in tipos:
+            model = apps.get_model(app_label='costos', model_name=costo)
+            try:
+                with atomic():
+                    for obj in model.objects.filter(periodo=de_periodo):
+                        copia_dict[costo] = True
+                        obj.pk = None
+                        if recalcular:
+                            obj.recalcular_valor(des_param)
+                        obj.periodo = a_periodo
+                        obj.save()
+            except IntegrityError:
+                copia_dict[costo] = False
+        for costo in tipos:
+            if costo in copia_dict:
+                if copia_dict[costo]:
+                    messages.add_message(self.request, messages.SUCCESS,
+                                         "Se crearon ítems de {} para el periodo {}".format(
+                                                 dict(form.TIPO_COSTO)[costo], a_periodo))
+                else:
+                    messages.add_message(self.request, messages.WARNING,
+                                         "Ya existen ítems de {} para el periodo {}. Debe utilizar "
+                                         "la herramienta Ingreso Masivo Manual.".format(
+                                                 dict(form.TIPO_COSTO)[costo], a_periodo))
+            else:
+                messages.add_message(self.request, messages.WARNING,
+                                     "No existen ítems de {} para el periodo {}".format(dict(form.TIPO_COSTO)[costo], de_periodo))
+        return HttpResponseRedirect(reverse('costos:index'))
 
 
 class IngresoMasivoMixin:
@@ -126,20 +188,27 @@ class IngresoMasivoConFamiliaEquipoMixin(IngresoMasivoMixin):
             with atomic():
 
                 for f in formsets:
-                    if f.cleaned_data["monto"]:
+                    if f.cleaned_data["monto_hora"] or f.cleaned_data["monto_mes"]:
                         if not periodo:
                             periodo = p_form.cleaned_data["periodo"]
                             parametros = CostoParametro.objects.get(periodo=periodo)
                         familia = f.cleaned_data["familia"]
                         if self.model.objects.filter(periodo=periodo, familia_equipo=familia).exists():
-                            errors = f._errors.setdefault("monto", ErrorList())
+                            errors = f._errors.setdefault("monto_mes", ErrorList())
                             errors.append(u"Ya existe un valor para el periodo seleccionado.")
                             has_error = True
                         else:
                             sub_contr = self.model()
                             sub_contr.familia_equipo = familia
-                            sub_contr.monto_hora = f.cleaned_data["monto"]
-                            sub_contr.set_monto_mes(parametros)
+                            if f.cleaned_data["monto_hora"] and not f.cleaned_data["monto_mes"]:
+                                sub_contr.monto_hora = f.cleaned_data["monto_hora"]
+                                sub_contr.set_monto_mes(parametros)
+                            elif f.cleaned_data["monto_mes"] and not f.cleaned_data["monto_hora"]:
+                                sub_contr.monto_mes = f.cleaned_data["monto_mes"]
+                                sub_contr.set_monto_hora(parametros)
+                            else:
+                                sub_contr.monto_hora = f.cleaned_data["monto_hora"]
+                                sub_contr.monto_mes = f.cleaned_data["monto_mes"]
                             sub_contr.periodo = periodo
                             sub_contr.save()
                 if has_error:

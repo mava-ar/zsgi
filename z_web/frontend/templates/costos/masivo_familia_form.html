@@ -1,15 +1,36 @@
 {% extends "costos/masivo_form.html" %}
 {% load frontend_tags %}
-{% block formsets %}
-    {% for fs in formsets %}
-        <tr data-index="{{ formsets.prefix }}">
-            <td>
-                {{ familias|nombre_familia:fs }}
-                {{ fs.familia }}
+{% block extra_info %}
+    <p class="alert alert-info">
+    Podrá ingresar todos los costos del periodo seleccionado. Si existiese algún dato duplicado, se mostrará una alerta.<br>
+    Puede ingresar ambos valores ($/hs y $/mes), o sólo uno, y el otro será calculado automáticamente
+        a partir del valor dado. Si deja ambos vacios, la fila será ignorada.
+    </p>
 
-            </td>
-            <td>{{ fs.monto }}</td>
-            <td><span class="text-danger">{{ fs.monto.errors|striptags }}</span></td>
+{% endblock %}
+{% block formsets %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Centro de costo</th>
+            <th>Monto Hora($/Hs)</th>
+            <th>Monto Mes($/mes)</th>
+            <th></th>
         </tr>
-    {% endfor %}
+        </thead>
+        <tbody>
+        {% for fs in formsets %}
+            <tr data-index="{{ formsets.prefix }}">
+                <td>
+                    {{ familias|nombre_familia:fs }}
+                    {{ fs.familia }}
+
+                </td>
+                <td>{{ fs.monto_hora }}</td>
+                <td>{{ fs.monto_mes }}</td>
+                <td><span class="text-danger">{{ fs.monto_mes.errors|striptags }}</span></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

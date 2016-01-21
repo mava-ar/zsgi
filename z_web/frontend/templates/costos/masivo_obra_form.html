@@ -1,15 +1,25 @@
 {% extends "costos/masivo_form.html" %}
 {% load frontend_tags %}
 {% block formsets %}
-    {% for fs in formsets %}
-        <tr data-index="{{ formsets.prefix }}">
-            <td>
-                {{ obras|obra_codigo:fs }}
-                {{ fs.obra }}
-
-            </td>
-            <td>{{ fs.monto }}</td>
-            <td><span class="text-danger">{{ fs.monto.errors|striptags }}</span></td>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Centro de costo</th>
+            <th colspan="2">Monto ($)</th>
         </tr>
-    {% endfor %}
+        </thead>
+        <tbody>
+        {% for fs in formsets %}
+            <tr data-index="{{ formsets.prefix }}">
+                <td>
+                    {{ obras|obra_codigo:fs }}
+                    {{ fs.obra }}
+
+                </td>
+                <td>{{ fs.monto }}</td>
+                <td><span class="text-danger">{{ fs.monto.errors|striptags }}</span></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
