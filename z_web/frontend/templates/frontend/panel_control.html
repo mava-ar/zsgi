@@ -1,13 +1,13 @@
 {% extends "frontend/base_custom.html" %}
 {% load i18n frontend_tags charts_tags static %}
-{% block title %}Panel de Control - ZILLE WEB{% endblock %}
+{% block title %}Panel de Control{% endblock %}
 {% block last_breadcrumbs %}Panel de control{% endblock %}
 
 {% block pretitle %}<h2>PANEL DE CONTROL</h2>{% endblock %}
 
 {% block content %}
     <div class="filters">
-
+        <a class="btn btn-primary pull-right" id="export_excel">Exportar a XLS</a>
         <form method="get" action="." class="form-inline">
             <div class="form-group">
                 <label for="periodo-sel">Periodo: </label>
@@ -18,7 +18,9 @@
                 </select>
             </div>
             <button class="button" type="submit">Ver</button>
+
         </form>
+
     </div>
     <ul class="nav nav-tabs">
         <li class="active"><a data-toggle="tab" href="#venta-costos">Ventas - Costos</a></li>
@@ -46,6 +48,9 @@
     <script type="text/javascript">
         (function ($) {
             $(document).ready(function () {
+                $("#export_excel").click(function(){
+                    window.location = "{% url 'frontend:export_panel_control_excel' %}?periodo=" + $("#periodo-sel").val();
+                })
                 var data = [
                     {% if resumen_costos %}
                             {% for i in resumen_costos|extraer_data_grafico_costos:-1 %}{

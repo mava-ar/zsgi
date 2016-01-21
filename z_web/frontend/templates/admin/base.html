@@ -3,7 +3,7 @@
 {% block html %}<!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
-    <title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}{% endblock %} - ZILLE WEB </title>
     <meta name="copyright" content="geex-arts.com">
     {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 
@@ -140,13 +140,19 @@
                                         </a>
                                     </li>
                                 {% endif %}
-                                {% if site_url %}
+
                                     <li class="sidebar-menu-item-list-item">
                                         <a href="{% url 'frontend:index' %}" class="sidebar-menu-item-list-item-link">
                                             <span class="sidebar-menu-item-list-item-icon icon-open-external"></span> Panel de control
                                         </a>
                                     </li>
-                                {% endif %}
+
+                                     <li class="sidebar-menu-item-list-item">
+                                        <a href="{% url 'costos:index' %}" class="sidebar-menu-item-list-item-link">
+                                            <span class="sidebar-menu-item-list-item-icon icon-book"></span> Ingreso de costos
+                                        </a>
+                                    </li>
+
                                 {% url 'django-admindocs-docroot' as docsroot %}
                                 {% if docsroot %}
                                     <li class="sidebar-menu-item-list-item">

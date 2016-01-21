@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'pipeline',
     'bootstrap3',
     'compressor',
+    'formtools',
 
     'core',
     'indumentaria',

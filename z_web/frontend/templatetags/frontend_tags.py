@@ -19,3 +19,25 @@ def money(val):
 @register.filter
 def js_format(val):
     return number_js_format(val)
+
+
+@register.filter
+def obra_codigo(obras, form):
+    try:
+        if form.initial:
+            return "{}".format(obras.get(pk=form.initial["obra"]))
+        else:
+            return "{}".format(obras.get(pk=form.cleaned_data["obra"].pk))
+    except:
+        return ""
+
+
+@register.filter
+def nombre_familia(familias, form):
+    try:
+        if form.initial:
+            return "{}".format(familias.get(pk=form.initial["familia"]))
+        else:
+            return "{}".format(familias.get(pk=form.cleaned_data["familia"].pk))
+    except:
+        return ""
