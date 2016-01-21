@@ -145,7 +145,7 @@ class ExportPanelControl(ExportExcelMixin):
             for i in range(0, len(line)):
                 if row == 12 and i > 0:
                     ws_costos.write_formula(row, i, '=sum({0}{1}:{0}{2})'.format(self.get_c(i + 1), 5, 12),
-                                              self.style_dict["header"], line[i])
+                                            self.style_dict["header_num"], line[i])
                 else:
                     ws_costos.write(row, i, line[i],
                                     self.style_dict["header"] if row in [3, 12] or i == 0 else self.style_dict["normal"])
