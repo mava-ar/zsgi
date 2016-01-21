@@ -9,7 +9,7 @@ class CostoManoObra(models.Model):
     """
     Costos de mano de obra por CC y periodo
     """
-    obra = models.ForeignKey(Obras, verbose_name="Centro de Costo", related_name="costos_mo")
+    obra = models.ForeignKey(Obras, verbose_name="Centro de Costo", related_name="costos_mo", limit_choices_to={'es_cc':True})
     periodo = models.ForeignKey(Periodo, verbose_name="Periodo", related_name="costos_mo")
     monto = models.FloatField(verbose_name="Monto ($)")
 
@@ -28,7 +28,8 @@ class CostoSubContrato(models.Model):
     """
     descripcion = models.CharField(verbose_name="Descripción", max_length=255, blank=True,
                                    help_text="Observaciones opcionales")
-    obra = models.ForeignKey(Obras, verbose_name="Centro de costo", related_name="costos_subcontrato")
+    obra = models.ForeignKey(Obras, verbose_name="Centro de costo", related_name="costos_subcontrato",
+                             limit_choices_to={'es_cc':True})
     periodo = models.ForeignKey(Periodo, verbose_name="Periodo", related_name="costos_subcontratos")
     monto = models.FloatField(verbose_name="Monto ($)")
 
@@ -57,6 +58,14 @@ class AbstractCosto(models.Model):
 
     def __str__(self):
         return "{} de {} en {}".format(self._meta.verbose_name, self.familia_equipo, self.periodo)
+
+    def set_monto_mes(self, parametros):
+        if self.monto_hora:
+            self.monto_mes = parametros.dias_mes * parametros.horas_dia * self.monto_hora
+
+    def set_monto_hora(self, parametros):
+        if self.monto_mes:
+            self.monto_hora = self.monto_mes / parametros.dias_mes / parametros.horas_dia
 
 
 class LubricanteFluidosHidro(AbstractCosto):
@@ -97,7 +106,8 @@ class MaterialesTotal(models.Model):
     Total de costo de materiales por periodo
     """
     periodo = models.ForeignKey(Periodo, verbose_name="Periodo", related_name="costos_total_materiales")
-    obra = models.ForeignKey(Obras, verbose_name="Centro de costo", related_name="costos_total_materiales")
+    obra = models.ForeignKey(Obras, verbose_name="Centro de costo", related_name="costos_total_materiales",
+                             limit_choices_to={'es_cc':True})
     monto = models.FloatField(verbose_name="Costo ($)")
 
     class Meta:
@@ -157,7 +167,8 @@ class ServicioPrestadoUN(models.Model):
     Servicios prestados a otras Unidades de Negocio
     """
     periodo = models.ForeignKey(Periodo, verbose_name="Periodo", related_name="costos_servicios_xperiodo")
-    obra = models.ForeignKey(Obras, verbose_name="Centro de costo", related_name="costos_servicios_xobra")
+    obra = models.ForeignKey(Obras, verbose_name="Centro de costo", related_name="costos_servicios_xobra",
+                             limit_choices_to={'es_cc':True})
     monto = models.FloatField(verbose_name="Costo ($)")
 
     class Meta:

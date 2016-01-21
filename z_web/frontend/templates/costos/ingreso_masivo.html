@@ -1,0 +1,77 @@
+{% extends "admin/base_admin_custom.html" %}
+{% load i18n %}
+{% block title %}INGRESO MASIVO DE COSTOS{% endblock %}
+{% block last_breadcrumbs %}&rsaquo; Ingreso masivo de costos {% endblock %}
+
+{% block content %}
+    <div class="jumbotron">
+        <h4 class="text-info">Utilice esta herramienta para ingresar de manera más cómoda los costos de un periodo dado.
+        Escoja el tipo de costo a ingresar de las opciones disponible abajo.</h4>
+    </div>
+
+    <div class="row opciones-costos">
+        <div class="col-md-6">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Relacionados con CC
+                </div>
+                <div class="panel-body">
+                    <div>
+                        <a class="btn btn-primary" href="{% url 'costos:masivo_manoobra' %}">
+                            Costos de mano de obra
+                        </a>
+                    </div>
+                    <div>
+                        <a class="btn btn-primary" href="{% url 'costos:masivo_subcontrato' %}">
+                            Costos por subcontratos
+                        </a>
+                    </div>
+                    <div>
+                        <a class="btn btn-primary" href="{% url 'costos:masivo_total_materiales' %}">
+                            Costos totales de materiales
+                        </a>
+                    </div>
+                    <div>
+                        <a class="btn btn-primary" href="{% url 'costos:masivo_serviciosprestados' %}">
+                            Servicios prestados a otras UN
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Relacionados con los equipos
+                </div>
+                <div class="panel-body">
+                    <div>
+                        <a class="btn btn-primary" href="{% url 'costos:masivo_lubricantes' %}">
+                            Costos de Lubricantes y fluídos hidráulicos
+                        </a>
+                    </div>
+                    <div>
+                        <a class="btn btn-primary" href="{% url 'costos:masivo_tren_rodaje' %}">
+                            Costos de tren de rodaje
+                        </a>
+                    </div>
+                    <div>
+                        <a class="btn btn-primary" href="{% url 'costos:masivo_reserva_reparaciones' %}">
+                            Reservas para reparaciones
+                        </a>
+                    </div>
+                    <div>
+                        <a class="btn btn-primary" href="{% url 'costos:masivo_posesion' %}">
+                            Costos por posesión
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

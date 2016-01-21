@@ -1,0 +1,15 @@
+{% extends "costos/masivo_form.html" %}
+{% load frontend_tags %}
+{% block formsets %}
+    {% for fs in formsets %}
+        <tr data-index="{{ formsets.prefix }}">
+            <td>
+                {{ obras|obra_codigo:fs }}
+                {{ fs.obra }}
+
+            </td>
+            <td>{{ fs.monto }}</td>
+            <td><span class="text-danger">{{ fs.monto.errors|striptags }}</span></td>
+        </tr>
+    {% endfor %}
+{% endblock %}

@@ -14,6 +14,13 @@ body.zweb {
         display: none;
     }
 }
+body.custom-admin {
+    #container {
+        padding-left: 250px ;
+        padding-right: inherit;
+        width:inherit;
+    }
+}
 
 label {
     line-height: 30px;
@@ -33,6 +40,37 @@ h2 {
     margin-bottom: 10px;
 }
 
+.header-wizard {
+    padding: 5px 0px 18px;
+}
+
+.btn2 {
+    font-weight: lighter;
+    font-size: 12px;
+    text-align: center;
+    background-color: #47BAC1;
+    color: #FFF;
+    padding: 0px 20px;
+    display: inline-block;
+    text-transform: uppercase;
+    border: 0px none;
+border-radius: 4px;
+font-size: 13px;
+height: 32px;
+white-space: nowrap;
+outline: 0px none;
+box-sizing: border-box;
+margin: 0px;
+transition: background 0.3s ease 0s, box-shadow 0.3s ease 0s, border 0.3s ease 0s;
+}
+
+.opciones-costos {
+   .panel-body {
+       div {
+           margin: 5px;
+       }
+   }
+}
 /* Override jet themes */
 #content {
     padding: 5px 20px;
@@ -40,4 +78,22 @@ h2 {
 
 .top {
     padding: 5px 20px;
+}
+
+
+/* overrides bootstraps */
+.table {
+    tbody {
+        tr {
+            td{
+                vertical-align: middle;
+            }
+        }
+    }
+}
+.btn-primary {
+    color: #FFF !important;
+}
+a:hover, a:focus {
+    text-decoration: none;
 }
