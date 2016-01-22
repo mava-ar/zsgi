@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db.transaction import atomic
 from django.views.generic import TemplateView, CreateView
-from django.forms.util import ErrorList
+from django.forms.utils import ErrorList
 from django.forms.formsets import formset_factory
 from django.http import HttpResponseRedirect
 from django.utils.safestring import mark_safe
