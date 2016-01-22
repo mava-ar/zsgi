@@ -20,7 +20,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': normpath(join(SITE_ROOT, '../../log/django-debug.log')),
+            'filename': normpath(join(SITE_ROOT, '../../logs/django-debug.log')),
         },
     },
     'loggers': {
