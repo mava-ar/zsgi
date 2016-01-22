@@ -11,3 +11,5 @@ DATABASES = {
         "POST": "3306"
     }
 }
+
+ALLOWED_HOSTS = ['127.0.0.1', ]
