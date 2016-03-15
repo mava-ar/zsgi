@@ -3,8 +3,6 @@ from functools import partial, wraps
 from django.forms.models import ModelForm, BaseInlineFormSet
 from django.forms.formsets import BaseFormSet, formset_factory
 
-
-from .models import CostoSubContrato
 from core.models import Obras
 from parametros.models import Periodo, FamiliaEquipo
 

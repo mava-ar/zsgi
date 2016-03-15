@@ -35,12 +35,13 @@ def calcular_item_costo(report, datos, no_prorrat, prorrat=None, multiplicador=1
     return report
 
 
-def get_utlizacion_equipo(periodo):
+def get_utilizacion_equipo(periodo):
     qs = Partediario.objects.filter(
-        fecha__lte=periodo.fecha_fin, fecha__gte=periodo.fecha_inicio, situacion__id=1).exclude(
+        fecha__lte=periodo.fecha_fin, fecha__gte=periodo.fecha_inicio, situacion__id=1, obra__es_cc=True).exclude(
         registro_equipo__equipo_id=1).exclude(registro_equipo__isnull=True).values(
-        'registro_equipo__equipo_id', 'registro_equipo__equipo__n_interno', 'funcion__funcion', 'operario__nombre',
-        'obra__obra', 'obra_id', 'registro_equipo__equipo__familia_equipo_id').annotate(dias_mes=Count('id')).order_by(
+        'registro_equipo__equipo_id', 'registro_equipo__equipo__n_interno',
+        'obra__obra', 'obra_id', 'registro_equipo__equipo__familia_equipo_id',
+        'registro_equipo__equipo__familia_equipo__nombre').annotate(dias_mes=Count('id')).order_by(
         '-obra_id', '-registro_equipo__equipo__n_interno')
 
     processed = defaultdict(list)
@@ -62,10 +63,10 @@ def get_utlizacion_equipo(periodo):
     for k, v in result.items():
         total = 0
         for l in v:
-            total, l["fluido"] = get_calculo_costo(lubris, l, param.dias_mes, total)
-            total, l["tren"] = get_calculo_costo(tren, l, param.dias_mes, total)
-            total, l["posesion"] = get_calculo_costo(posesion, l, param.dias_mes, total)
-            total, l["repara"] = get_calculo_costo(repara, l, param.dias_mes, total)
+            total, l["fluido"] = get_calculo_costo(lubris, l, param.horas_dia, total)
+            total, l["tren"] = get_calculo_costo(tren, l, param.horas_dia, total)
+            total, l["posesion"] = get_calculo_costo(posesion, l, param.horas_dia, total)
+            total, l["repara"] = get_calculo_costo(repara, l, param.horas_dia, total)
         totales[v[0]["obra_id"]] = total
 
     return result, totales

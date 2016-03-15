@@ -6,7 +6,7 @@ class ExportExcelMixin:
     LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
     def get_c(self, col):
-        """ Convert given row and column number to an Excel-style cell name. """
+
         result = []
         while col:
             col, rem = divmod(col-1, 26)

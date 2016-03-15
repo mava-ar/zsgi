@@ -8,7 +8,7 @@ from django.utils.safestring import mark_safe
 
 from parametros.models import Periodo
 from costos.models import CostoParametro
-from .stats import get_utlizacion_equipo, get_cc_on_periodo, get_ventas_costos
+from .stats import get_utilizacion_equipo, get_cc_on_periodo, get_ventas_costos
 
 from zweb_utils.excel import ExportPanelControl
 
@@ -35,7 +35,7 @@ def get_context(request, periodos):
         periodo = periodos[0] if periodos else None
     context["periodo"] = periodo
     try:
-        context["equipos"], context["totales"] = get_utlizacion_equipo(periodo)
+        context["equipos"], context["totales"] = get_utilizacion_equipo(periodo)
         context["resumen_costos"], context["total"], totales_costos = get_cc_on_periodo(periodo, context["totales"])
         context["cert_costos"], context["costos_ventas_total"] = get_ventas_costos(periodo, totales_costos)
     except CostoParametro.DoesNotExist as e:
