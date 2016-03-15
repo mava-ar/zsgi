@@ -5,6 +5,7 @@ DEBUG = False
 
 INSTALLED_APPS += (
     'gunicorn',
+    'raven.contrib.django.raven_compat',
 )
 
 ALLOWED_HOSTS = ['127.0.0.1', ]
@@ -16,11 +17,25 @@ ADMINS = [
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'root': {
+        'level': 'WARNING',
+        'handlers': ['sentry'],
+    },
     'handlers': {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': normpath(join(SITE_ROOT, '../../logs/django-debug.log')),
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        },
+        'sentry': {
+            'level': 'ERROR',
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+            'tags': {'custom-tag': 'x'},
         },
     },
     'loggers': {
@@ -28,6 +43,11 @@ LOGGING = {
             'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,
+        },
+        'django_mail': {
+            'handlers': ['mail_admins'],
+            'propagate': True,
+            'level': 'ERROR',
         },
     },
 }
