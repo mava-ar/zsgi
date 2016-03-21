@@ -63,3 +63,4 @@ collected_static/
 components/
 z_web/zillepro_web/settings/local.py
 z_web/zillepro_web/settings/private.py
+fabfile.py
