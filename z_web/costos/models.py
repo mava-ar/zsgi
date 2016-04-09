@@ -23,6 +23,7 @@ class CalculosMixin:
         elif hasattr(self, 'monto_hora'):
             self.monto_hora = nuevo_pd * self.monto_hora / viejo_pd
 
+
 class CostoManoObra(models.Model, CalculosMixin):
     """
     Costos de mano de obra por CC y periodo
@@ -178,6 +179,11 @@ class CostoParametro(models.Model):
     class Meta:
         verbose_name = "parametro de costo"
         verbose_name_plural = "parametros de costos"
+        permissions = (
+            ("can_view_panel_control", "Puede ver Panel de Control"),
+            ("can_add_costos_masivo", "Puede ingresar costos masivos"),
+            ("can_export_panel_control", "Puede exportar el panel de control")
+        )
 
 
 class ServicioPrestadoUN(models.Model, CalculosMixin):

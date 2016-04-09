@@ -13,13 +13,17 @@ from django.utils.safestring import mark_safe
 
 from core.models import Obras
 from parametros.models import Periodo, FamiliaEquipo
+from zweb_utils.views import LoginAndPermissionRequiredMixin
 from .models import (CostoSubContrato, CostoManoObra, CostoPosesion, ReserveReparaciones, TrenRodaje,
                      ServicioPrestadoUN, MaterialesTotal, LubricanteFluidosHidro, CostoParametro)
 from .forms import PeriodoSelectForm, CostoItemForm, CostoItemFamiliaForm, CopiaCostoForm
 
 
-class Index(TemplateView):
+class Index(LoginAndPermissionRequiredMixin, TemplateView):
     template_name = "costos/ingreso_masivo.html"
+    permission_required = 'can_add_costos_masivo'
+    permission_denied_message = "No posee los permisos suficientes para ingresar a esa sección"
+    raise_exception = True
 
     def get_context_data(self, **kwargs):
         context = super(Index, self).get_context_data(**kwargs)
@@ -84,7 +88,7 @@ class Index(TemplateView):
         return HttpResponseRedirect(reverse('costos:index'))
 
 
-class IngresoMasivoMixin:
+class IngresoMasivoMixin(LoginAndPermissionRequiredMixin):
     """
     Se debe definir en la subclase de TemplateView:
     TITLE_TIPO_COSTO: con el titulo para el formulario
@@ -92,6 +96,10 @@ class IngresoMasivoMixin:
     form_class: clase de form utilizada en el formset
     specified_field: nombre del campo particular de la subclase
     """
+    permission_required = 'can_add_costos_masivo'
+    permission_denied_message = "No posee los permisos suficientes para ingresar a esa sección"
+    raise_exception = True
+
     def get_context_data(self, **kwargs):
         context = super(IngresoMasivoMixin, self).get_context_data(**kwargs)
         context["periodo"] = Periodo.objects.order_by('-fecha_inicio')
