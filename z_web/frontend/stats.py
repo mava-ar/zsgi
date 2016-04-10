@@ -36,17 +36,20 @@ def calcular_item_costo(report, datos, no_prorrat, prorrat=None, multiplicador=1
 
 
 def get_utilizacion_equipo(periodo):
+    obras = Certificacion.objects.filter(periodo=periodo).values_list('obra_id', flat=True)
+    if not obras:
+        raise Certificacion.DoesNotExist
     qs = Partediario.objects.filter(
-        fecha__lte=periodo.fecha_fin, fecha__gte=periodo.fecha_inicio, situacion__id=1, obra__es_cc=True).exclude(
+        fecha__lte=periodo.fecha_fin, fecha__gte=periodo.fecha_inicio, situacion__id=1, obra__in=obras).exclude(
         registro_equipo__equipo_id=1).exclude(registro_equipo__isnull=True).values(
         'registro_equipo__equipo_id', 'registro_equipo__equipo__n_interno',
-        'obra__obra', 'obra_id', 'registro_equipo__equipo__familia_equipo_id',
+        'obra__codigo', 'obra_id', 'registro_equipo__equipo__familia_equipo_id',
         'registro_equipo__equipo__familia_equipo__nombre').annotate(dias_mes=Count('id')).order_by(
         '-obra_id', '-registro_equipo__equipo__n_interno')
 
     processed = defaultdict(list)
     for result in qs:
-        processed[result["obra__obra"]].append(result)
+        processed[result["obra__codigo"]].append(result)
     result = dict(processed.items())
     ids = list(set(x["registro_equipo__equipo__familia_equipo_id"] for x in qs))
     param = CostoParametro.objects.get(periodo=periodo)
@@ -75,31 +78,30 @@ def get_utilizacion_equipo(periodo):
 def get_cc_on_periodo(periodo, totales):
     param = CostoParametro.objects.get(periodo=periodo)
     # Todas las obras implicadas en costos
-    ccs = Obras.objects.filter(incluir_en_costos=True).values_list('id', 'codigo', 'prorratea_combustible',
-                                                       'prorratea_manoobra', 'prorratea_materiales').order_by("pk")
-    # Ids de obras tipo CC (con costos prorrateables y sin)
-    obras_ids = [x[0] for x in ccs]
-    pro_combustible = [x[0] for x in ccs if x[2]]
-    pro_manoobra = [x[0] for x in ccs if x[3]]
-    pro_materiales = [x[0] for x in ccs if x[4]]
+    ccs = Certificacion.objects.select_related('obra').filter(
+        periodo=periodo).values_list('obra_id', 'obra__codigo')
+    if not ccs.exists():
+        raise Certificacion.DoesNotExist
 
     # Busco las cabeceras (CC no prorrateable)
-    no_prorrat = dict(ccs.filter(prorratea_combustible=False,
-                                 prorratea_manoobra=False,
-                                 prorratea_materiales=False).values_list('id', 'codigo').order_by('pk'))
+    no_prorrat = dict(ccs)
+
+    ccs_pror = dict(Obras.objects.filter(prorratea_costos=True).exclude(
+        pk__in=no_prorrat.keys()).values_list('id', 'codigo'))
+
+    # Ids de obras tipo CC (con costos prorrateables y sin)
+    obras_ids = list(no_prorrat.keys()) + list(ccs_pror.keys())
 
     # Defino el head del reporte
 
     headers = [x for x in no_prorrat.values()]
     headers.insert(0, "TIPO DE COSTO")
     tipo_costo_headers = ["Combustible", "Prorrateo de Combustible", "Mano de Obra", "Prorrateo de Mano de Obra", "Subcontratos" ,
-     "Utilización de equipos", "Materiales", "Prorateo de Materiales", "Totales"]
-
-    # report.append(headers)
+     "Utilización de equipos", "Materiales", "Prorrateo de Materiales", "Totales"]
 
     values = []
     # combustible
-    combustible = dict(ccs.annotate(combustible=Sum(
+    combustible = dict(Obras.objects.filter(pk__in=obras_ids).annotate(combustible=Sum(
         Case(
             When(
                 partediario__fecha__gte=periodo.fecha_inicio,
@@ -115,7 +117,7 @@ def get_cc_on_periodo(periodo, totales):
         values,
         combustible,
         no_prorrat,
-        pro_combustible, multiplicador=param.precio_go)
+        list(ccs_pror.keys()), multiplicador=param.precio_go)
 
     # Mano de obra
     mos = dict(CostoManoObra.objects.filter(periodo=periodo, obra_id__in=obras_ids).values_list('obra_id', 'monto'))
@@ -123,7 +125,7 @@ def get_cc_on_periodo(periodo, totales):
         values,
         mos,
         no_prorrat,
-        pro_manoobra
+        list(ccs_pror.keys())
     )
 
 
@@ -148,7 +150,7 @@ def get_cc_on_periodo(periodo, totales):
         values,
         mat,
         no_prorrat,
-        pro_materiales
+        list(ccs_pror.keys())
     )
     # armamos la tabla de costos
     totales = [sum(i) for i in zip(*values)]

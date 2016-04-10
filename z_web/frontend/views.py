@@ -6,6 +6,7 @@ from django.views.generic import TemplateView
 
 from parametros.models import Periodo
 from costos.models import CostoParametro
+from registro.models import Certificacion
 from zweb_utils.views import LoginAndPermissionRequiredMixin
 from .stats import get_utilizacion_equipo, get_cc_on_periodo, get_ventas_costos
 
@@ -34,6 +35,10 @@ class Index(LoginAndPermissionRequiredMixin, TemplateView):
             messages.add_message(self.request, messages.WARNING,
                                  mark_safe("No están definidos los <a href='/costos/costoparametro'>parámetros de costos</a> para el "
                                            "periodo {}".format(periodo)))
+        except Certificacion.DoesNotExist as e:
+            messages.add_message(self.request, messages.WARNING,
+                                 mark_safe("No hay <a href='{}'>certificaciones de obras</a> para el "
+                                           "periodo {}".format(reverse('admin:registro_certificacion_changelist'), periodo)))
         return context
 
     def get(self, request, *args, **kwargs):

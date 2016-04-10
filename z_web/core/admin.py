@@ -32,10 +32,10 @@ class EstacionServicioAdmin(admin.ModelAdmin):
 
 @admin.register(Obras)
 class ObrasAdmin(admin.ModelAdmin):
-    list_display = ('codigo', 'obra', 'cuit', 'lugar', 'responsable', 'is_active', )
-    list_filter = ('responsable', 'descuenta_francos', 'descuenta_licencias', "es_cc", )
+    list_display = ('codigo', 'obra', 'cuit', 'lugar', 'responsable', 'is_active', 'es_cc', 'prorratea_costos')
+    list_filter = ('responsable', 'descuenta_francos', 'descuenta_licencias', "es_cc", 'prorratea_costos')
     search_fields = ('codigo', 'obra', 'comitente', 'responsable', 'cuit', )
-    ordering = ('fecha_fin', 'codigo', )
+    ordering = ('fecha_fin', 'codigo', '-es_cc',)
     fieldsets = (
         (None, {
             'fields': (('codigo', 'obra', 'fecha_inicio', 'fecha_fin'),
