@@ -49,7 +49,7 @@ class ObrasAdmin(admin.ModelAdmin):
             'fields': ('tiene_comida', 'tiene_vianda', 'tiene_desarraigo', 'limite_vianda_doble', )
         }),
         ("Configuración de costos", {
-            'fields': ('es_cc', 'incluir_en_costos', 'prorratea_combustible', 'prorratea_manoobra', 'prorratea_materiales', )
+            'fields': ('es_cc', 'prorratea_costos', )
         })
     )
     def is_active(self, obj):
