@@ -5,7 +5,7 @@ from django.utils.safestring import mark_safe
 from django.views.generic import TemplateView
 
 from parametros.models import Periodo
-from costos.models import CostoParametro
+from costos.models import CostoParametro, ArchivosAdjuntosPeriodo
 from registro.models import Certificacion, AjusteCombustible
 from zweb_utils.views import LoginAndPermissionRequiredMixin
 from .stats import get_utilizacion_equipo, get_cc_on_periodo, get_ventas_costos
@@ -32,6 +32,7 @@ class Index(LoginAndPermissionRequiredMixin, TemplateView):
             context["equipos"], context["totales"] = get_utilizacion_equipo(periodo)
             context["resumen_costos"], context["total"], totales_costos = get_cc_on_periodo(periodo, context["totales"])
             context["cert_costos"], context["costos_ventas_total"] = get_ventas_costos(periodo, totales_costos)
+            context["archivos"] = ArchivosAdjuntosPeriodo.objects.filter(periodo=periodo)
         except CostoParametro.DoesNotExist as e:
             messages.add_message(self.request, messages.WARNING,
                                  mark_safe("No están definidos los <a href='/costos/costoparametro'>parámetros de costos</a> para el "

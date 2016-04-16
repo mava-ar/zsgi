@@ -203,6 +203,7 @@ LOCALE_PATHS = (normpath(join(DJANGO_ROOT, 'locale')), )
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
 
 JET_DEFAULT_THEME = 'default'
 

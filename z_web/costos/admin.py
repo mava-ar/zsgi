@@ -1,11 +1,8 @@
-from datetime import datetime
-
 from django.contrib import admin
-
 
 from .models import (CostoManoObra, CostoSubContrato, LubricanteFluidosHidro,
                      TrenRodaje, ReserveReparaciones, MaterialesTotal,
-                     CostoParametro, CostoPosesion, ServicioPrestadoUN)
+                     CostoParametro, CostoPosesion, ServicioPrestadoUN, ArchivosAdjuntosPeriodo)
 from zweb_utils.format import currency_format as cur
 
 
@@ -101,3 +98,7 @@ class ReserveReparacionesAdmin(AbstractAdmin):
 class CostoPosesionAdmin(AbstractAdmin):
     pass
 
+
+@admin.register(ArchivosAdjuntosPeriodo)
+class ArchivosAdjuntosPeriodoAdmin(admin.ModelAdmin):
+    list_display = ('periodo', 'archivo', 'comentario')

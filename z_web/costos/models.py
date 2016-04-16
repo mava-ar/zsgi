@@ -1,7 +1,6 @@
 from django.db import models
-from django.db.models import Q
-from core.models import Obras
 
+from core.models import Obras
 from parametros.models import Periodo, FamiliaEquipo
 
 
@@ -202,3 +201,19 @@ class ServicioPrestadoUN(models.Model, CalculosMixin):
 
     def __str__(self):
         return "{} - {}".format(self.obra, self.periodo)
+
+
+class ArchivosAdjuntosPeriodo(models.Model):
+    """
+    Adjuntar archivos a un periodo para asociarlos al panel de control
+    """
+    periodo = models.ForeignKey(Periodo, verbose_name="Periodo", related_name="archivos")
+    archivo = models.FileField(verbose_name="archivo", upload_to="adjuntos")
+    comentario = models.TextField(verbose_name="comentario", null=True, blank=True)
+
+    class Meta:
+        verbose_name = "archivo adjunto de periodo"
+        verbose_name_plural = "archivos adjunto de periodos"
+
+    def __str__(self):
+        return "{} ({})".format(self.archivo, self.periodo)
