@@ -8,7 +8,7 @@
                 <tr>
                     {% for head in cc %}
                         <th>
-                            {{ head }}
+                            {{ head|slice:"30" }}
                         </th>
                     {% endfor %}
                 </tr>

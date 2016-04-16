@@ -36,7 +36,8 @@ def calcular_item_costo(report, datos, no_prorrat, prorrat=None, multiplicador=1
 
 
 def get_utilizacion_equipo(periodo):
-    obras = Certificacion.objects.filter(periodo=periodo).values_list('obra_id', flat=True)
+    obras = list(Certificacion.objects.filter(periodo=periodo).values_list('obra_id', flat=True))
+    obras += list(ServicioPrestadoUN.objects.filter(periodo=periodo).values_list('obra_id', flat=True))
     if not obras:
         raise Certificacion.DoesNotExist
     qs = Partediario.objects.filter(
@@ -78,13 +79,16 @@ def get_utilizacion_equipo(periodo):
 def get_cc_on_periodo(periodo, totales):
     param = CostoParametro.objects.get(periodo=periodo)
     # Todas las obras implicadas en costos
-    ccs = Certificacion.objects.select_related('obra').filter(
+    ccs1 = Certificacion.objects.select_related('obra').filter(
         periodo=periodo).values_list('obra_id', 'obra__codigo')
-    if not ccs.exists():
+    serv = ServicioPrestadoUN.objects.select_related('obra').filter(
+        periodo=periodo).values_list('obra_id', 'obra__codigo')
+    if not ccs1.exists() and not serv.exists():
         raise Certificacion.DoesNotExist
 
     # Busco las cabeceras (CC no prorrateable)
-    no_prorrat = dict(ccs)
+    no_prorrat = dict(ccs1)
+    no_prorrat.update(dict(serv))
 
     ccs_pror = dict(Obras.objects.filter(prorratea_costos=True).exclude(
         pk__in=no_prorrat.keys()).values_list('id', 'codigo'))
