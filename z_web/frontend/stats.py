@@ -5,7 +5,7 @@ from django.db.models import Count, When, Case, Sum
 from costos.models import (LubricanteFluidosHidro, TrenRodaje, CostoPosesion, ReserveReparaciones, CostoParametro,
                            CostoManoObra, CostoSubContrato, MaterialesTotal, ServicioPrestadoUN)
 from core.models import Obras
-from registro.models import Partediario, Certificacion
+from registro.models import Partediario, Certificacion, AjusteCombustible
 
 
 def get_calculo_costo(costos, valores, horas_dia, total=0):
@@ -118,6 +118,17 @@ def get_cc_on_periodo(periodo, totales):
         combustible,
         no_prorrat,
         list(ccs_pror.keys()), multiplicador=param.precio_go)
+
+    # ajuste de combustible - temporal mientras se desarrolla combustible
+    ajuste_combustible = AjusteCombustible.objects.filter(periodo=periodo)
+    if ajuste_combustible:
+        ajuste = ajuste_combustible.get().valor
+        valores = values[0]
+        total = sum(valores)
+        if total > 0:
+            for v in valores:
+                valores[valores.index(v)] = v + (ajuste * (v / total))
+
 
     # Mano de obra
     mos = dict(CostoManoObra.objects.filter(periodo=periodo, obra_id__in=obras_ids).values_list('obra_id', 'monto'))

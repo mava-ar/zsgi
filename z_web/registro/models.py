@@ -214,3 +214,16 @@ class Materiales(models.Model):
         return "({}) {} - {}".format(
             self.cantidad, self.material,
             self.cantera_cargadero if self.cantera_cargadero else "Cantera/Cargadero no especificado")
+
+
+class AjusteCombustible(models.Model):
+    periodo = models.OneToOneField(Periodo, related_name="ajustes_combustibles")
+    valor = models.FloatField(verbose_name="valor de ajuste")
+    comentarios = models.TextField(verbose_name="comentarios", null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "ajustes de combustible"
+        verbose_name = "ajuste de combustible"
+
+    def __str__(self):
+        return "{} - {}".format(self.periodo, self.valor)
