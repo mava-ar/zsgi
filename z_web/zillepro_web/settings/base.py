@@ -54,9 +54,9 @@ INSTALLED_APPS = (
 
     'core',
     'indumentaria',
-    'documento',
     'parametros',
     'registro',
+    'documento',
     'costos',
     'zweb_utils',
 )

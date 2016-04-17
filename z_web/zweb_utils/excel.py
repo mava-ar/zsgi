@@ -122,7 +122,7 @@ class ExportPanelControl(ExportExcelMixin):
         chart.add_series({'values': "='{2}'!${0}$6:${1}$6".format(self.get_c(2), self.get_c(i+1), worksheet_s_name),
                           'categories': categories, 'name':"Ventas" })
         chart.add_series({'values': "='{2}'!${0}$7:${1}$7".format(self.get_c(2), self.get_c(i+1), worksheet_s_name),
-                          'categories': categories, 'name': 'Servicios a UN' })
+                          'categories': categories, 'name': 'Certif. Internas' })
         chart.set_x_axis({
             'name': 'Centros de costos',
             'name_font': {'size': 14, 'bold': True},

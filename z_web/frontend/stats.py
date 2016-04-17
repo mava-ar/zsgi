@@ -3,9 +3,9 @@ from collections import defaultdict
 from django.db.models import Count, When, Case, Sum
 
 from costos.models import (LubricanteFluidosHidro, TrenRodaje, CostoPosesion, ReserveReparaciones, CostoParametro,
-                           CostoManoObra, CostoSubContrato, MaterialesTotal, ServicioPrestadoUN)
+                           CostoManoObra, CostoSubContrato, MaterialesTotal)
 from core.models import Obras
-from registro.models import Partediario, Certificacion, AjusteCombustible
+from registro.models import Partediario, Certificacion, AjusteCombustible, CertificacionInterna
 
 
 def get_calculo_costo(costos, valores, horas_dia, total=0):
@@ -37,7 +37,7 @@ def calcular_item_costo(report, datos, no_prorrat, prorrat=None, multiplicador=1
 
 def get_utilizacion_equipo(periodo):
     obras = list(Certificacion.objects.filter(periodo=periodo).values_list('obra_id', flat=True))
-    obras += list(ServicioPrestadoUN.objects.filter(periodo=periodo).values_list('obra_id', flat=True))
+    obras += list(CertificacionInterna.objects.filter(periodo=periodo).values_list('obra_id', flat=True))
     if not obras:
         raise Certificacion.DoesNotExist
     qs = Partediario.objects.filter(
@@ -81,7 +81,7 @@ def get_cc_on_periodo(periodo, totales):
     # Todas las obras implicadas en costos
     ccs1 = Certificacion.objects.select_related('obra').filter(
         periodo=periodo).values_list('obra_id', 'obra__codigo')
-    serv = ServicioPrestadoUN.objects.select_related('obra').filter(
+    serv = CertificacionInterna.objects.select_related('obra').filter(
         periodo=periodo).values_list('obra_id', 'obra__codigo')
     if not ccs1.exists() and not serv.exists():
         raise Certificacion.DoesNotExist
@@ -186,19 +186,13 @@ def get_cc_on_periodo(periodo, totales):
 
 def get_ventas_costos(periodo, totales_costos):
     """
-    Usando las claves del dict, buscar:
-        Nombre de CC
-        Certificaciones del periodo
-        Subcontratos del periodo
-        Calcular totales
-        Calcular tota
-        
+
     """
     ids = list(totales_costos.keys())
     obras = dict(Obras.objects.filter(id__in=ids).values_list('id', 'codigo'))
     cert = dict(Certificacion.objects.filter(periodo=periodo, obra_id__in=ids).values_list('obra_id', 'monto'))
-    servicios = dict(ServicioPrestadoUN.objects.filter(periodo=periodo, obra_id__in=ids).values_list('obra_id', 'monto'))
-    report = [['CC', ], ['Costos', ], ['Certificaciones', ], ['Servicios prestados a O/S', ], ['Diferencia', ], ]
+    cert_interna = dict(CertificacionInterna.objects.filter(periodo=periodo, obra_id__in=ids).values_list('obra_id', 'monto'))
+    report = [['CC', ], ['Costos', ], ['Certificaciones', ], ['Certif. Internas', ], ['Diferencia', ], ]
     total = {'t_costos': 0, 't_certif': 0, 't_servicios': 0, 't_diff': 0}
     for x in ids:
         report[0].append(obras.get(x, 0))
@@ -206,9 +200,9 @@ def get_ventas_costos(periodo, totales_costos):
         total["t_costos"] += totales_costos.get(x, 0)
         report[2].append(cert.get(x, 0))
         total["t_certif"] += cert.get(x, 0)
-        report[3].append(servicios.get(x, 0))
-        total["t_servicios"] += servicios.get(x, 0)
-        row_t = cert.get(x, 0) - totales_costos.get(x, 0) + servicios.get(x, 0)
+        report[3].append(cert_interna.get(x, 0))
+        total["t_servicios"] += cert_interna.get(x, 0)
+        row_t = cert.get(x, 0) - totales_costos.get(x, 0) + cert_interna.get(x, 0)
         report[4].append(row_t)
         total["t_diff"] += row_t
     return report, total

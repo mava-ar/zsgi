@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from .models import (CostoManoObra, CostoSubContrato, LubricanteFluidosHidro,
                      TrenRodaje, ReserveReparaciones, MaterialesTotal,
-                     CostoParametro, CostoPosesion, ServicioPrestadoUN, ArchivosAdjuntosPeriodo)
+                     CostoParametro, CostoPosesion, ArchivosAdjuntosPeriodo)
 from zweb_utils.format import currency_format as cur
 
 
@@ -44,17 +44,6 @@ class CostoSubContratoAdmin(admin.ModelAdmin):
 
 @admin.register(MaterialesTotal)
 class MaterialesTotalAdmin(admin.ModelAdmin):
-    list_display = ('obra', 'periodo', 'monto_format', )
-    list_filter = ('obra', 'periodo', )
-    ordering = ('-periodo__fecha_inicio', )
-
-    def monto_format(self, obj):
-        return cur(obj.monto)
-    monto_format.short_description = "Costo ($)"
-
-
-@admin.register(ServicioPrestadoUN)
-class ServicioPrestadoUNAdmin(admin.ModelAdmin):
     list_display = ('obra', 'periodo', 'monto_format', )
     list_filter = ('obra', 'periodo', )
     ordering = ('-periodo__fecha_inicio', )

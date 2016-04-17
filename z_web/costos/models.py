@@ -187,7 +187,7 @@ class CostoParametro(models.Model):
 
 class ServicioPrestadoUN(models.Model, CalculosMixin):
     """
-    Servicios prestados a otras Unidades de Negocio
+    Este modelo pasa a registros, ya que no es un costo.
     """
     periodo = models.ForeignKey(Periodo, verbose_name="Periodo", related_name="costos_servicios_xperiodo")
     obra = models.ForeignKey(Obras, verbose_name="Centro de costo", related_name="costos_servicios_xobra",

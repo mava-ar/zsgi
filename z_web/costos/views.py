@@ -15,7 +15,7 @@ from core.models import Obras
 from parametros.models import Periodo, FamiliaEquipo
 from zweb_utils.views import LoginAndPermissionRequiredMixin
 from .models import (CostoSubContrato, CostoManoObra, CostoPosesion, ReserveReparaciones, TrenRodaje,
-                     ServicioPrestadoUN, MaterialesTotal, LubricanteFluidosHidro, CostoParametro)
+                     MaterialesTotal, LubricanteFluidosHidro, CostoParametro)
 from .forms import PeriodoSelectForm, CostoItemForm, CostoItemFamiliaForm, CopiaCostoForm
 
 
@@ -246,11 +246,6 @@ class TotalMaterialesView(IngresoMasivoConObraMixin, TemplateView):
     TITLE_TIPO_COSTO = "Costos totales de materiales"
 
 
-class ServiciosPrestadosView(IngresoMasivoConObraMixin, TemplateView):
-    model = ServicioPrestadoUN
-    TITLE_TIPO_COSTO = "Servicios prestados a otras Unidades de Negocio"
-
-
 class LubricanteFluidosHidroView(IngresoMasivoConFamiliaEquipoMixin, TemplateView):
     model = LubricanteFluidosHidro
     TITLE_TIPO_COSTO = "Costos de Lubricantes y Fluídos Hidráulicos"
@@ -275,7 +270,6 @@ index = Index.as_view()
 masivo_subcontrato = SubcontratoMasivoView.as_view()
 masivo_manoobra = ManoObraMasivoView.as_view()
 masivo_total_materiales = TotalMaterialesView.as_view()
-masivo_serviciosprestados = ServiciosPrestadosView.as_view()
 masivo_lubricantes = LubricanteFluidosHidroView.as_view()
 
 masivo_tren_rodaje = TrenRodajeView.as_view()
