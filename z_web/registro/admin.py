@@ -118,8 +118,8 @@ class CertificacionAdmin(admin.ModelAdmin):
 
 @admin.register(AjusteCombustible)
 class AjusteCombustibleAdmin(admin.ModelAdmin):
-    list_display = ('periodo', 'valor_format', 'comentarios')
-    list_filter = ('periodo', )
+    list_display = ('periodo', 'obra', 'valor_format', 'comentarios')
+    list_filter = ('periodo', 'obra', )
 
     def valor_format(self, obj):
         return cur(obj.valor)

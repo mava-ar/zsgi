@@ -14,11 +14,13 @@ def get_calculo_costo(costos, valores, horas_dia, total=0):
     return total, val
 
 
-def calcular_item_costo(report, datos, no_prorrat, prorrat=None, multiplicador=1):
+def calcular_item_costo(report, datos, no_prorrat, prorrat=None, multiplicador=1, ajuste={}):
     lista = []
 
     for x in no_prorrat:
-        lista.append(datos.get(x, 0) * multiplicador if datos.get(x, 0) else 0)
+        val = datos.get(x, 0) * multiplicador if datos.get(x, 0) else 0
+        val += ajuste.get(x, 0)
+        lista.append(val)
     report.append(lista)
 
     if not prorrat is None:
@@ -26,8 +28,9 @@ def calcular_item_costo(report, datos, no_prorrat, prorrat=None, multiplicador=1
         total_prorrateo = 0
         for x in prorrat:
             data = datos.get(x, 0)
-            if data:
-                total_prorrateo += (data * multiplicador)
+            _ajuste = ajuste.get(x, 0)
+            if data or _ajuste:
+                total_prorrateo += (data if data else 0 * multiplicador) + _ajuste
         total_prorrateo /= len(no_prorrat)
         for x in no_prorrat:
             lista_prorrat.append(total_prorrateo)
@@ -115,24 +118,16 @@ def get_cc_on_periodo(periodo, totales):
     )
     ).values_list('id', 'combustible'))
 
+    # ajuste de combustible - temporal mientras se desarrolla combustible
+    ajuste_combustible = dict(AjusteCombustible.objects.filter(
+        periodo=periodo, obra_id__in=obras_ids).values_list('obra_id', 'valor'))
 
     # Prorrateo de combustible
     values = calcular_item_costo(
         values,
         combustible,
         no_prorrat,
-        list(ccs_pror.keys()), multiplicador=param.precio_go)
-
-    # ajuste de combustible - temporal mientras se desarrolla combustible
-    ajuste_combustible = AjusteCombustible.objects.filter(periodo=periodo)
-    if ajuste_combustible:
-        ajuste = ajuste_combustible.get().valor
-        valores = values[0]
-        total = sum(valores)
-        if total > 0:
-            for v in valores:
-                valores[valores.index(v)] = v + (ajuste * (v / total))
-
+        list(ccs_pror.keys()), multiplicador=param.precio_go, ajuste=ajuste_combustible)
 
     # Mano de obra
     mos = dict(CostoManoObra.objects.filter(periodo=periodo, obra_id__in=obras_ids).values_list('obra_id', 'monto'))

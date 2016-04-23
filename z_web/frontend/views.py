@@ -28,7 +28,6 @@ class Index(LoginAndPermissionRequiredMixin, TemplateView):
             periodo = periodos[0] if periodos else None
         context["periodo"] = periodo
         try:
-            context["ajuste_combustible"] = sum(AjusteCombustible.objects.filter(periodo=periodo).values_list('valor', flat=True))
             context["equipos"], context["totales"] = get_utilizacion_equipo(periodo)
             context["resumen_costos"], context["total"], totales_costos = get_cc_on_periodo(periodo, context["totales"])
             context["cert_costos"], context["costos_ventas_total"] = get_ventas_costos(periodo, totales_costos)

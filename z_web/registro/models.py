@@ -217,16 +217,18 @@ class Materiales(models.Model):
 
 
 class AjusteCombustible(models.Model):
-    periodo = models.OneToOneField(Periodo, related_name="ajustes_combustibles")
+    periodo = models.ForeignKey(Periodo, related_name="ajustes_combustibles")
+    obra = models.ForeignKey(Obras, related_name="ajustes_combustibles_x_obra")
     valor = models.FloatField(verbose_name="valor de ajuste")
     comentarios = models.TextField(verbose_name="comentarios", null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "ajustes de combustible"
         verbose_name = "ajuste de combustible"
+        unique_together = ('periodo', 'obra', )
 
     def __str__(self):
-        return "{} - {}".format(self.periodo, self.valor)
+        return "{} - {}".format(self.periodo, self.obra)
 
 
 class CertificacionInterna(models.Model):
